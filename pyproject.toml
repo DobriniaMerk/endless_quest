@@ -1,0 +1,13 @@
+[project]
+name = "questsite"
+version = "1.0.0"
+description = "Text quest editable by everyone."
+dependencies = [
+    "flask",
+    "markdown",
+    "bleach",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

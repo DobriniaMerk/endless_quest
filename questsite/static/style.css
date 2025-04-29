@@ -1,0 +1,45 @@
+.content {
+  margin: auto;
+  max-width: 600px;
+}
+
+nav {
+  max-width: 800px;
+  margin-inline: auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+nav h1 {
+  flex: 1;
+  font-size: 160%;
+}
+
+.flex-right {
+  margin-left: auto;
+}
+
+.edit {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit label {
+  margin-bottom: 7px;
+  padding-left: 10px;
+}
+
+.edit input {
+  margin-bottom: 15px;
+}
+
+textarea {
+  height: 40vh;
+}
+
+.content :is(h1, h2, h3, h4, h5, h6) {
+  filter: brightness(165%);
+}
