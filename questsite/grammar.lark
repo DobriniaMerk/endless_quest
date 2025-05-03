@@ -1,0 +1,61 @@
+?start: something+
+
+?special: subst
+        | if
+        | link
+
+?something: special
+          | text
+
+subst: "[" expr "]"
+     | "[" expr "|" NUMBER "]"
+
+expr: sum
+
+?sum: product
+   | sum "+" product -> sum
+   | sum "-" product -> diff
+?product: atom
+       | product "*" atom -> mult
+       | product "/" atom -> div
+?atom: NUMBER -> number
+    | "-" atom -> neg
+    | VARNAME -> var
+    | "(" sum ")"
+
+
+if: "::" conditional "::" then elif* else? "&&"
+elif: "%" conditional "%" something*
+else: "%%" something*
+then: something*
+
+?conditional: cond_or
+
+?cond_or: cond_and
+        | cond_or "|" cond_and -> or
+
+?cond_and: logical_atom
+        | cond_and "&" logical_atom -> and
+
+?logical_atom: VARNAME -> flagvar
+             | expr comp expr -> comp
+
+!?comp:"<" | ">" | "=" | "<=" | ">="
+
+
+link: "{" something* "|" NUMBER "}" varblock?
+varblock: "{" (varset ",")* varset "}"
+?varset: "+" VARNAME -> flag
+         | "-" VARNAME -> unflag
+         | VARNAME "=" expr -> set
+
+
+VARNAME: (LETTER|"_") (LETTER|DIGIT|"_")*
+LETTER: "a".."z" | "A".."Z" | "а".."я" | "А".."Я"
+text: /(?:(?!&&)(?!::)[^%|[{])+/
+
+
+%import common.SIGNED_INT -> NUMBER
+%import common.DIGIT
+%import common.WS
+%ignore WS
