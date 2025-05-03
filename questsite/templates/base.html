@@ -6,6 +6,15 @@
 <div class="nav">
   <nav>
       {% block header %}{% endblock %}
+      <div class="user-info">
+        {% if current_user.is_authenticated %}
+            <div>Вы вошли как: <strong>{{ current_user.username }}</strong></div>
+            <a class="logout-button" href="{{ url_for('auth.logout') }}">Выйти</a>
+        {% else %}
+            <div>Вы не вошли</div>
+            <a class="logout-button" href="{{ url_for('auth.login') }}">Войти</a>
+        {% endif %}
+    </div>
   </nav>
 </div>
 
