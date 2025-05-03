@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
-from .models import db, User
-from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from questsite import librarian
 
 langs = ['ru', 'en']
 
@@ -13,25 +13,32 @@ def register():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-        if User.query.filter_by(username=username).first():
+
+        db = librarian.ask_for_index()
+        if db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone():
             flash('Имя пользователя уже существует')
             return redirect(url_for('auth.register'))
-        user = User(username=username, email=email)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-        login_user(user)
+        
+        db.execute(
+            'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+            (username, email, generate_password_hash(password))
+        )
+        db.commit()
+        session['username'] = username
         return redirect(url_for('paragraph.show', id=0, lang=langs[0]))
     return render_template('register.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    if 'username' in session:
         return redirect(url_for('paragraph.show', id=0, lang=langs[0]))
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if user and user.check_password(request.form['password']):
-            login_user(user)
+        db = librarian.ask_for_index()
+        user = db.execute(
+            'SELECT * FROM users WHERE username = ?', (request.form['username'],)
+        ).fetchone()
+        if user and check_password_hash(user['password_hash'], request.form['password']):
+            session['username'] = user['username']
             return redirect(url_for('paragraph.show', id=0, lang=langs[0]))
         flash('Неправильное имя пользователя или пароль')
     return render_template('login.html')
@@ -39,7 +46,6 @@ def login():
 
 @auth_bp.route('/logout')
 def logout():
-    logout_user()
     session.clear()
     flash('Вы вышли из системы.', 'info')
     return redirect(url_for('auth.login'))

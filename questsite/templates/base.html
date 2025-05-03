@@ -7,8 +7,8 @@
   <nav>
       {% block header %}{% endblock %}
       <div class="user-info">
-        {% if current_user.is_authenticated %}
-            <div>Вы вошли как: <strong>{{ current_user.username }}</strong></div>
+        {% if session['username'] %}
+            <div>Вы вошли как: <strong>{{ session['username'] }}</strong></div>
             <a class="logout-button" href="{{ url_for('auth.logout') }}">Выйти</a>
         {% else %}
             <div>Вы не вошли</div>

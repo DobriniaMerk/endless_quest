@@ -2,6 +2,7 @@ import sqlite3
 import datetime
 import click
 from flask import current_app, g
+from werkzeug.security import generate_password_hash
 
 
 def ask_for_index():
@@ -48,3 +49,16 @@ def employ_command():
 def onstart(app):
     app.teardown_appcontext(return_index)
     app.cli.add_command(employ_command)
+
+
+def add_user(username, email, password):
+    db = ask_for_index()
+
+    user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+    if user:
+        raise ValueError('Пользователь существует.')
+
+    password_hash = generate_password_hash(password)
+    db.execute('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+               (username, email, password_hash))
+    db.commit()

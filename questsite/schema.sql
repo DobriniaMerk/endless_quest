@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS general;
 DROP TABLE IF EXISTS edits;
 DROP TABLE IF EXISTS paragraphs;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE general (
     name TEXT PRIMARY KEY,
@@ -26,4 +27,11 @@ CREATE TABLE paragraphs (
     protected BOOLEAN CHECK (protected IN (TRUE, FALSE)) DEFAULT FALSE,
     current_ru INTEGER,
     current_en INTEGER
+);
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL
 );

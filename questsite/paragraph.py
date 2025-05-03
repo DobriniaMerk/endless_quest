@@ -4,7 +4,6 @@ from questsite import librarian
 from flask import Blueprint, redirect, render_template, request, url_for
 from markdown import markdown
 import bleach
-from flask_login import login_required, current_user
 
 bp = Blueprint('paragraph', __name__, url_prefix='/')
 
