@@ -81,16 +81,16 @@ def escape(text):
     return re.sub(r'\[([^]]+)\]\(([^)]*[^\d)][^)]*)\)', r'\[\1\]\(\2\)', text)
 
 
-def fill_links(text):
-    def fill(match):
-        return f'[{match.group(1)}]({new_paragraph()})'
-
-    def parenth(match):
-        print('MATCHED!!!!')
-        return f'[{match.group(1)}]()'
-
-    text = re.sub(r'\[([^]\n]+)\](?!\()', parenth, text)  # [...] -> [...]()
-    return re.sub(r'\[([^]\n]+)\]\(\)', fill, text)  # [...]() -> [...](№)
+# def fill_links(text):
+#     def fill(match):
+#         return f'[{match.group(1)}]({new_paragraph()})'
+#
+#     def parenth(match):
+#         print('MATCHED!!!!')
+#         return f'[{match.group(1)}]()'
+#
+#     text = re.sub(r'\[([^]\n]+)\](?!\()', parenth, text)  # [...] -> [...]()
+#     return re.sub(r'\[([^]\n]+)\]\(\)', fill, text)  # [...]() -> [...](№)
 
 
 @bp.route('/', methods=['GET'])

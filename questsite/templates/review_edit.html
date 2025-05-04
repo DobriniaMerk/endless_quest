@@ -1,0 +1,19 @@
+<h2>Правка #{{ edit.id }}</h2>
+
+<h3>Текущий текст:</h3>
+<pre>{{ current.story }}</pre>
+
+<h3>Новая версия:</h3>
+<pre>{{ edit.story }}</pre>
+
+<form method="post" action="{{ url_for('approve_edit', edit_id=edit.id) }}">
+  <button type="submit">Одобрить</button>
+</form>
+
+<form method="post" action="{{ url_for('reject_edit', edit_id=edit.id) }}">
+  <button type="submit">Отклонить</button>
+</form>
+
+<form method="post" action="{{ url_for('revert_edit', edit_id=edit.id) }}">
+  <button type="submit">Откатить</button>
+</form>

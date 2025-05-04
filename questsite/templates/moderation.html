@@ -1,0 +1,10 @@
+<h1>Модерация правок</h1>
+<ul>
+  {% for edit in edits %}
+    <li>
+      <a href="{{ url_for('review_edit', edit_id=edit.id) }}">
+        Правка #{{ edit.id }} параграфа {{ edit.paragraph_id }} [{{ edit.lang }}]
+      </a>
+    </li>
+  {% endfor %}
+</ul>
