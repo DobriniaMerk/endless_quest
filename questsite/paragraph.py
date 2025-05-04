@@ -4,8 +4,8 @@ from flask import Blueprint, redirect, render_template, request, url_for, curren
 from markdown import markdown
 import bleach
 
-from db import DB
-import parser
+from .db import DB
+from . import parser
 
 bp = Blueprint('paragraph', __name__, url_prefix='/')
 
@@ -69,20 +69,20 @@ def get_db() -> DB:
         _db = DB(current_app.config['DATABASE_PATH'])
     return _db
 
-def new_paragraph(text: str) -> int:
-    """Generate a new paragraph ID not yet in use"""
-    db = get_db()
-    existing = []
-    connection = db.connection()
-    cursor = connection.cursor()
-    cursor.execute('SELECT id FROM paragraphs')
-    existing = [row['id'] for row in cursor.fetchall()]
-    maxparagr = int(db.get_variable('maxparagr', None) or 0)
-    connection.close()
-    new_id = randint(2, maxparagr)
-    while new_id in existing:
-        new_id = randint(2, maxparagr)
-    return new_id;
+# def new_paragraph(text: str) -> int:
+#     """Generate a new paragraph ID not yet in use"""
+#     db = get_db()
+#     existing = []
+#     connection = db.connection()
+#     cursor = connection.cursor()
+#     cursor.execute('SELECT id FROM paragraphs')
+#     existing = [row['id'] for row in cursor.fetchall()]
+#     maxparagr = int(db.get_variable('maxparagr', None) or 0)
+#     connection.close()
+#     new_id = randint(2, maxparagr)
+#     while new_id in existing:
+#         new_id = randint(2, maxparagr)
+#     return new_id;
 
 def clean(text : str) -> str:
     return bleach.clean(text, tags=[])
@@ -98,13 +98,8 @@ def show(lang : str, id : int):
     if request.method == 'POST':
         return redirect(url_for('paragraph.show', id=request.form['id'], lang=lang))
     db = get_db()
-    connection = db._connect()
-    cursor = connection.cursor()
-    cursor.execute(
-        'SELECT protected, current_ru, current_en FROM paragraphs WHERE id = ?',
-        (id,)
-    )
-    raw = cursor.fetchone()
+
+    raw = db.get_paragraph(id, lang)
     exists = bool(raw)
     paragraph = {
         'id' : id,
@@ -116,17 +111,14 @@ def show(lang : str, id : int):
     if not exists:
         paragraph['title'] = locale[lang]['show']['not_written']['title']
         paragraph['story'] = locale[lang]['show']['not_written']['story']
-    elif raw[f'current_{lang}'] is None:
-        paragraph['title'] = locale[lang]['show']['translate']['title']
-        paragraph['story'] = locale[lang]['show']['translate']['story']
+    # elif raw[f'current_{lang}'] is None:
+    #     paragraph['title'] = locale[lang]['show']['translate']['title']
+    #     paragraph['story'] = locale[lang]['show']['translate']['story']
     else:
-        paragraph['protected'] = bool(raw['protected'])
-        story = db.get_paragraph(id, lang)
-        paragraph['story'] = story or ''
-        paragraph_data = parser.parse_text(paragraph['story'], lang)
-        paragraph['title'] = paragraph_data.get('title', '')
-        paragraph['story'] = paragraph_data.get('body', paragraph['story'])
-    paragraph['rendered'] = markdown(escape(paragraph['story']), extensions=['nl2br'])
+        # paragraph['protected'] = bool(raw['protected'])
+        paragraph['story'] = parser.process_page(raw[0])
+        paragraph['title'] = raw[1]
+    paragraph['rendered'] = paragraph['story']
     return render_template(
         'paragraph/show.html',
         paragraph=paragraph,
@@ -141,21 +133,21 @@ def edit(lang : str, id : int):
     db = get_db()
     if request.method == 'POST':
         title = clean(request.form['title'])
-        story = fill_links(clean(request.form['story']))
+        story = clean(request.form['story'])
         if not title:
             return redirect(url_for('paragraph.show', id=4096, lang=lang))
         edit_id = db.edit_paragraph(id, story, protected=False, lang=lang)
         return redirect(url_for('paragraph.show', id=id, lang=lang))
-    story = db.get_paragraph(id, lang)
+    raw = db.get_paragraph(id, lang)
     title = ''
-    if story:
-        data = parser.parse_text(story, lang)
-        title = data.get('title', '')
-        story = data.get('body', story)
+    story = ''
+    if raw:
+        title = raw[1]
+        story = raw[0]
     paragraph = {
         'id' : id,
         'title' : title,
-        'story' : story or ''
+        'story' : story
     }
     return render_template(
         'paragraph/edit.html',

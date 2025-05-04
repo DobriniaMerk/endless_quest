@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
 
-from db import DB
+from .db import DB
 
 langs = ['ru', 'en']
 

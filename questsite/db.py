@@ -72,7 +72,7 @@ class DB:
         connection.commit()
         connection.close()
 
-    def get_paragraph(self, paragraph_id : int, lang : str = "ru") -> Optional[str]:
+    def get_paragraph(self, paragraph_id : int, lang : str = "ru") -> Optional[Tuple[str, str]]:
         """
         Retrieve the text of a paragraph in the specified language.
 
@@ -81,7 +81,7 @@ class DB:
             lang (str, optional): The language ('ru' or 'en'). Defaults to 'ru'.
 
         Returns:
-            Optional[str]: The paragraph text, or None if not found.
+            Optional[Tuple[str, str]]: The paragraph text and title, or None if not found.
         """
         connection = self._connect()
         cursor = connection.cursor()
@@ -94,10 +94,10 @@ class DB:
         if not row or not row[column]:
             connection.close()
             return None
-        cursor.execute("SELECT story FROM edits WHERE id = ?", (paragraph_id,))
+        cursor.execute("SELECT story, title FROM edits WHERE id = ?", (paragraph_id,))
         story_row = cursor.fetchone()
         connection.close()
-        return story_row['story'] if story_row else None
+        return (story_row['story'], story_row['title']) if story_row else None
 
 
     def edit_paragraph(self, paragraph_id : int, new_text : str, protected : bool = False, lang : str = "ru") -> int:

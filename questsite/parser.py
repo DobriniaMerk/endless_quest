@@ -1,6 +1,5 @@
 import lark
-
-grammar_path = "grammar.lark"
+from flask import current_app
 
 def process_page(text: str) -> str:
     """
@@ -19,6 +18,7 @@ def load_grammar() -> str:
     """
     Loads grammar file and returns it's contents
     """
+    grammar_path = current_app.config['GRAMMAR_PATH']
     with open(grammar_path) as f:
         grammar = f.read()
     return grammar
