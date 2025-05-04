@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="458ac901-2f4d-4b51-aa0f-80bbf6b7cb84" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/questsite/grammar.lark" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/questsite/parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questsite/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/questsite/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questsite/paragraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/questsite/paragraph.py" afterDir="false" />
-    </list>
+    <list default="true" id="458ac901-2f4d-4b51-aa0f-80bbf6b7cb84" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

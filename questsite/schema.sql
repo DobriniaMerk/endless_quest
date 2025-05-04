@@ -12,7 +12,7 @@ INSERT INTO general VALUES ('size', 0);
 CREATE TABLE IF NOT EXISTS variables (
     name TEXT NOT NULL,
     user_id INTEGER,
-    visible INTEGER NOT NULL DEFAULT 0 CHECK (is_moderator IN (0,1)),
+    visible INTEGER NOT NULL DEFAULT 0 CHECK (visible IN (0,1)),
     value TEXT NOT NULL,
     PRIMARY KEY (name, user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     is_moderator INTEGER NOT NULL DEFAULT 0 CHECK (is_moderator IN (0,1)),
     created_at TIMESTAMP NOT NULL DEFAULT (datetime('now')),
     last_login TEXT
-)
+);
 
 CREATE TRIGGER IF NOT EXISTS users_set_created_at
     AFTER INSERT ON users
@@ -65,5 +65,5 @@ CREATE TRIGGER IF NOT EXISTS users_update_last_login
         UPDATE users SET last_login = datetime('now') WHERE id = OLD.id;
     END;
 
-COMMIT
+COMMIT;
 PRAGMA foreign_keys = ON;

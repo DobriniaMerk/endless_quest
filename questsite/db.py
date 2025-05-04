@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 from typing import Optional, Any, Tuple
+from pathlib import Path
 
 
 class DB:
@@ -26,13 +27,19 @@ class DB:
         Initialize the database by applying the SQL schema if the database is uninitialized.
         This method executes the SQL script located at self.schema_path.
         """
-        schema_file = self.schema_file
+        schema_file = self.schema_path
         if not schema_file.is_file():
             raise FileNotFoundError(f"Schema file not found: {schema_file}")
-        with sqlite3.connect(self.db_path) as connection:
-            connection.row_factory = sqlite3.Row
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='variables'"
+            )
+            if cur.fetchone():
+                return
             script = schema_file.read_text(encoding="utf-8")
-            connection.executescript(script)
+            conn.executescript(script)
 
     def _connect(self) -> sqlite3.Connection:
         """
