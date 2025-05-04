@@ -100,7 +100,7 @@ class DB:
         return story_row['story'] if story_row else None
 
 
-    def edit_paragrath(self, paragraph_id : int, new_text : str, protected : bool = False, lang : str = "ru") -> int:
+    def edit_paragraph(self, paragraph_id : int, new_text : str, protected : bool = False, lang : str = "ru") -> int:
         """
         Edit or create a paragraph, storing a new version in the history.
 
