@@ -7,67 +7,71 @@ import bleach
 from .db import DB
 from . import parser
 
-bp = Blueprint('paragraph', __name__, url_prefix='/')
+bp = Blueprint("paragraph", __name__, url_prefix="/")
 
-langs = ['ru', 'en']
+langs = ["ru", "en"]
 
 locale = {
-    'ru': {
-        'show': {
-            'not_written': {
-                'title': '???',
-                'story': 'События с этого момента покрываются туманом, и решительно ничего нельзя разобрать.'
+    "ru": {
+        "show": {
+            "not_written": {
+                "title": "???",
+                "story": "События с этого момента покрываются туманом, и решительно ничего нельзя разобрать.",
             },
-            'translate': {
-                'title': '???',
-                'story': 'Что было дальше никто не знает, но люди знающие утверждают что такое уже происходило, ' \
-                         'только тогда все было по-английски и никто ничего не понял. Если вы переводчик, ' \
-                         'можете объяснить тем, кто не столь сведущ.'
+            "translate": {
+                "title": "???",
+                "story": "Что было дальше никто не знает, но люди знающие утверждают что такое уже происходило, "
+                "только тогда все было по-английски и никто ничего не понял. Если вы переводчик, "
+                "можете объяснить тем, кто не столь сведущ.",
             },
-            'edit': 'Изменить',
-            'add': 'Добавить',
-            'goto': 'Перейти',
+            "edit": "Изменить",
+            "add": "Добавить",
+            "goto": "Перейти",
         },
-        'edit': {
-            'page-title': 'Новая страница',
-            'title': 'Заголовок',
-            'story': 'Разворот',
-            'save': 'Опубликовать',
-            'cancel': 'Выбросить черновик',
-        }
+        "edit": {
+            "page-title": "Новая страница",
+            "title": "Заголовок",
+            "story": "Разворот",
+            "save": "Опубликовать",
+            "cancel": "Выбросить черновик",
+        },
     },
-    'en': {
-        'show': {
-            'not_written': {
-                'title': '???',
-                'story': 'The story from this point is uncertain. Decide the outcome yourself, if you dare.'
+    "en": {
+        "show": {
+            "not_written": {
+                "title": "???",
+                "story": "The story from this point is uncertain. Decide the outcome yourself, if you dare.",
             },
-            'translate': {
-                'title': '???',
-                'story': 'What happened next is unclear, but those who have the knowledge of Russian can transfer ' \
-                         'the truth from over the Edge.'
+            "translate": {
+                "title": "???",
+                "story": "What happened next is unclear, but those who have the knowledge of Russian can transfer "
+                "the truth from over the Edge.",
             },
-            'edit': 'Edit',
-            'add': 'Add',
-            'goto': 'Goto',
+            "edit": "Edit",
+            "add": "Add",
+            "goto": "Goto",
         },
-        'edit': {
-            'page-title': 'Write new page',
-            'title': 'Title',
-            'story': 'Story',
-            'save': 'Publish',
-            'cancel': 'Better not',
-        }
-    }
+        "edit": {
+            "page-title": "Write new page",
+            "title": "Title",
+            "story": "Story",
+            "save": "Publish",
+            "cancel": "Better not",
+        },
+    },
 }
 
 _db = None
 
+
 def get_db() -> DB:
     global _db
     if _db is None:
-        _db = DB(current_app.config['DATABASE_PATH'])
+        _db = DB(
+            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
+        )
     return _db
+
 
 # def new_paragraph(text: str) -> int:
 #     """Generate a new paragraph ID not yet in use"""
@@ -84,74 +88,65 @@ def get_db() -> DB:
 #         new_id = randint(2, maxparagr)
 #     return new_id;
 
-def clean(text : str) -> str:
+
+def clean(text: str) -> str:
     return bleach.clean(text, tags=[])
 
-@bp.route('/', methods=['GET'])
-def index():
-    return redirect(url_for('paragraph.show'), id=0, lang=langs[0])
 
-@bp.route('<lang>/<int:id>', methods=['GET', 'POST'])
-def show(lang : str, id : int):
+@bp.route("/", methods=["GET"])
+def index():
+    return redirect(url_for("paragraph.show"), id=0, lang=langs[0])
+
+
+@bp.route("<lang>/<int:id>", methods=["GET", "POST"])
+def show(lang: str, id: int):
     if lang not in langs:
-        return redirect(url_for('paragraph.show', id=id, lang=langs[0]))
-    if request.method == 'POST':
-        return redirect(url_for('paragraph.show', id=request.form['id'], lang=lang))
+        return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
+    if request.method == "POST":
+        return redirect(url_for("paragraph.show", id=request.form["id"], lang=lang))
     db = get_db()
 
     raw = db.get_paragraph(id, lang)
     exists = bool(raw)
-    paragraph = {
-        'id' : id,
-        'lang' : lang,
-        'title' : '',
-        'story' : '',
-        'protected' : False
-    }
+    paragraph = {"id": id, "lang": lang, "title": "", "story": "", "protected": False}
     if not exists:
-        paragraph['title'] = locale[lang]['show']['not_written']['title']
-        paragraph['story'] = locale[lang]['show']['not_written']['story']
+        paragraph["title"] = locale[lang]["show"]["not_written"]["title"]
+        paragraph["story"] = locale[lang]["show"]["not_written"]["story"]
     # elif raw[f'current_{lang}'] is None:
     #     paragraph['title'] = locale[lang]['show']['translate']['title']
     #     paragraph['story'] = locale[lang]['show']['translate']['story']
     else:
         # paragraph['protected'] = bool(raw['protected'])
-        paragraph['story'] = parser.process_page(raw[0])
-        paragraph['title'] = raw[1]
-    paragraph['rendered'] = paragraph['story']
+        paragraph["story"] = parser.process_page(raw[0])
+        paragraph["title"] = raw[1]
+    paragraph["rendered"] = paragraph["story"]
     return render_template(
-        'paragraph/show.html',
+        "paragraph/show.html",
         paragraph=paragraph,
         exists=exists,
-        locale=locale[lang]['show']
+        locale=locale[lang]["show"],
     )
 
-@bp.route('<lang>/<int:id>/edit', methods=['GET', 'POST'])
-def edit(lang : str, id : int):
+
+@bp.route("<lang>/<int:id>/edit", methods=["GET", "POST"])
+def edit(lang: str, id: int):
     if lang not in langs:
-        return redirect(url_for('paragraph.show', id=id, lang=langs[0]))
+        return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
     db = get_db()
-    if request.method == 'POST':
-        title = clean(request.form['title'])
-        story = clean(request.form['story'])
+    if request.method == "POST":
+        title = clean(request.form["title"])
+        story = clean(request.form["story"])
         if not title:
-            return redirect(url_for('paragraph.show', id=4096, lang=lang))
+            return redirect(url_for("paragraph.show", id=4096, lang=lang))
         edit_id = db.edit_paragraph(id, story, protected=False, lang=lang)
-        return redirect(url_for('paragraph.show', id=id, lang=lang))
+        return redirect(url_for("paragraph.show", id=id, lang=lang))
     raw = db.get_paragraph(id, lang)
-    title = ''
-    story = ''
+    title = ""
+    story = ""
     if raw:
         title = raw[1]
         story = raw[0]
-    paragraph = {
-        'id' : id,
-        'title' : title,
-        'story' : story
-    }
+    paragraph = {"id": id, "title": title, "story": story}
     return render_template(
-        'paragraph/edit.html',
-        paragraph=paragraph,
-        ln=lang,
-        locale=locale[lang]['edit']
+        "paragraph/edit.html", paragraph=paragraph, ln=lang, locale=locale[lang]["edit"]
     )

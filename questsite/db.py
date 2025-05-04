@@ -2,24 +2,37 @@ import sqlite3
 import hashlib
 from typing import Optional, Any, Tuple
 
+
 class DB:
     """A simple SQLite database interface for managing users, variables, and paragraphs."""
-    def __init__(self, db_path : str) -> None:
+
+    def __init__(self, db_path: str, schema_path: str) -> None:
         """
         Initialize the database handler.
 
         Args:
             db_path (str): Path to the SQLite database file.
+            schema_path (Optional[str]): Path to the SQL schema file. If None, assumes 'schema.sql' in the same directory.
         """
         self.db_path = db_path
+        if schema_path:
+            self.schema_path = Path(schema_path)
+        else:
+            self.schema_path = Path(__file__).parent / "schema.sql"
         self._init_db()
 
     def _init_db(self) -> None:
         """
-        Initialize the database schema if needed.
-        (Currently a placeholder; extend as necessary.)
+        Initialize the database by applying the SQL schema if the database is uninitialized.
+        This method executes the SQL script located at self.schema_path.
         """
-        pass
+        schema_file = self.schema_file
+        if not schema_file.is_file():
+            raise FileNotFoundError(f"Schema file not found: {schema_file}")
+        with sqlite3.connect(self.db_path) as connection:
+            connection.row_factory = sqlite3.Row
+            script = schema_file.read_text(encoding="utf-8")
+            connection.executescript(script)
 
     def _connect(self) -> sqlite3.Connection:
         """
@@ -32,7 +45,7 @@ class DB:
         connection.row_factory = sqlite3.Row
         return connection
 
-    def get_variable(self, name : str, user_id : int) -> Optional[str]:
+    def get_variable(self, name: str, user_id: int) -> Optional[str]:
         """
         Retrieve the value of a user-specific variable.
 
@@ -53,7 +66,9 @@ class DB:
         connection.close()
         return result["value"] if result else None
 
-    def set_variable(self, name : str, user_id : int, value : str, visible : bool = False) -> None:
+    def set_variable(
+        self, name: str, user_id: int, value: str, visible: bool = False
+    ) -> None:
         """
         Set or update the value of a user-specific variable.
 
@@ -66,13 +81,15 @@ class DB:
         cursor = connection.cursor()
         cursor.execute(
             "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)",
-                "ON CONFLICT (name, user_id) DO UPDATE SET value = excluded.value",
-            (name, user_id, visible, value)
+            "ON CONFLICT (name, user_id) DO UPDATE SET value = excluded.value",
+            (name, user_id, visible, value),
         )
         connection.commit()
         connection.close()
 
-    def get_paragraph(self, paragraph_id : int, lang : str = "ru") -> Optional[Tuple[str, str]]:
+    def get_paragraph(
+        self, paragraph_id: int, lang: str = "ru"
+    ) -> Optional[Tuple[str, str]]:
         """
         Retrieve the text of a paragraph in the specified language.
 
@@ -86,10 +103,7 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         column = "current_ru" if lang == "ru" else "current_en"
-        cursor.execute(
-            f"SELECT {column} FROM paragraphs WHERE id = ?",
-            (paragraph_id,)
-        )
+        cursor.execute(f"SELECT {column} FROM paragraphs WHERE id = ?", (paragraph_id,))
         row = cursor.fetchone()
         if not row or not row[column]:
             connection.close()
@@ -97,10 +111,15 @@ class DB:
         cursor.execute("SELECT story, title FROM edits WHERE id = ?", (paragraph_id,))
         story_row = cursor.fetchone()
         connection.close()
-        return (story_row['story'], story_row['title']) if story_row else None
+        return (story_row["story"], story_row["title"]) if story_row else None
 
-
-    def edit_paragraph(self, paragraph_id : int, new_text : str, protected : bool = False, lang : str = "ru") -> int:
+    def edit_paragraph(
+        self,
+        paragraph_id: int,
+        new_text: str,
+        protected: bool = False,
+        lang: str = "ru",
+    ) -> int:
         """
         Edit or create a paragraph, storing a new version in the history.
 
@@ -115,10 +134,10 @@ class DB:
         """
         connection = self._connect()
         cursor = connection.cursor()
-        column = 'current_ru' if lang == 'ru' else 'current_en'
+        column = "current_ru" if lang == "ru" else "current_en"
         cursor.execute(
             "SELECT id, protected, current_ru, current_en FROM paragraphs WHERE id = ?",
-            (paragraph_id,)
+            (paragraph_id,),
         )
         existing = cursor.fetchone()
         previous_edit = None
@@ -127,22 +146,24 @@ class DB:
         else:
             cursor.execute(
                 "INSERT INTO paragraphs(id, protected) VALUES (?, ?)",
-                (paragraph_id, int(protected))
+                (paragraph_id, int(protected)),
             )
         cursor.execute(
             "INSERT INTO edits(paragraph, lang, previous, story) VALUES (?, ?, ?, ?)",
-            (paragraph_id, lang, previous_edit, new_text)
+            (paragraph_id, lang, previous_edit, new_text),
         )
         new_edit_id = cursor.lastrowid
         cursor.execute(
             f"UPDATE paragraphs SET {column} = ?, protected = ? WHERE id = ?",
-            (new_edit_id, int(protected), paragraph_id)
+            (new_edit_id, int(protected), paragraph_id),
         )
         connection.commit()
         connection.close()
         return new_edit_id
 
-    def add_user(self, username : str, email : str, password : str, is_moderator : bool = False) -> int:
+    def add_user(
+        self, username: str, email: str, password: str, is_moderator: bool = False
+    ) -> int:
         """
         Create a new user account.
 
@@ -160,14 +181,14 @@ class DB:
         cursor = connection.cursor()
         cursor.execute(
             "INSERT INTO users(username, email, password, is_moderator) VALUES (?, ?, ?, ?)",
-            (username, email, password_hash, int(is_moderator))
+            (username, email, password_hash, int(is_moderator)),
         )
         user_id = cursor.lastrowid
         connection.commit()
         connection.close()
         return user_id
 
-    def find_user(self, username : str, password : str) -> Optional[Tuple[int, bool]]:
+    def find_user(self, username: str, password: str) -> Optional[Tuple[int, bool]]:
         """
         Authenticate a user with the provided credentials.
 
@@ -183,17 +204,14 @@ class DB:
         cursor = connection.cursor()
         cursor.execute(
             "SELECT id, is_moderator FROM users WHERE username = ? AND password_hash = ?",
-            (username, password_hash)
+            (username, password_hash),
         )
         row = cursor.fetchone()
         connection.close()
-        return (row['id'], bool(row['is_moderator'])) if row else None
+        return (row["id"], bool(row["is_moderator"])) if row else None
 
-    def user_exists(self, username : str):
+    def user_exists(self, username: str):
         connection = self._connect()
         cursor = connection.cursor()
-        cursor.execute(
-            "SELECT id FROM users WHERE username = ?",
-            (username)
-        )
+        cursor.execute("SELECT id FROM users WHERE username = ?", (username))
         return cursor.fetchone() is not None

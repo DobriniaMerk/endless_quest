@@ -4,14 +4,13 @@ from .auth import auth_bp
 from . import paragraph
 
 
-
 def create_app(test_config=None):
     app = Flask(__name__)
 
     app.config.from_mapping(
         SECRET_KEY="theverysecretkeynooneshouldknow",
         DATABASE_PATH=os.path.join(app.instance_path, "database.sqlite"),
-        GRAMMAR_PATH=os.path.join(app.root_path, "grammar.lark")
+        GRAMMAR_PATH=os.path.join(app.root_path, "grammar.lark"),
     )
 
     os.makedirs(app.instance_path, exist_ok=True)
@@ -23,11 +22,9 @@ def create_app(test_config=None):
     #     # load the test config if passed in
     #     app.config.from_mapping(test_config)
 
-
     @app.route("/lorem")
     def test():
         return "Lorem ipsum dolor sit amet"
-
 
     app.register_blueprint(paragraph.bp)
 
