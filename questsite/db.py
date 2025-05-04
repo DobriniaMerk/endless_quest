@@ -53,7 +53,7 @@ class DB:
         connection.close()
         return result["value"] if result else None
 
-    def set_variable(self, name : str, user_id : int, value : str) -> None:
+    def set_variable(self, name : str, user_id : int, value : str, visible : bool = False) -> None:
         """
         Set or update the value of a user-specific variable.
 
@@ -65,9 +65,9 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO variables (name, user_id, value) VALUES (?, ?, ?)",
+            "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)",
                 "ON CONFLICT (name, user_id) DO UPDATE SET value = excluded.value",
-            (name, user_id, value)
+            (name, user_id, visible, value)
         )
         connection.commit()
         connection.close()

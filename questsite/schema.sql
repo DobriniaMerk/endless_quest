@@ -12,6 +12,7 @@ INSERT INTO general VALUES ('size', 0);
 CREATE TABLE IF NOT EXISTS variables (
     name TEXT NOT NULL,
     user_id INTEGER,
+    visible INTEGER NOT NULL DEFAULT 0 CHECK (is_moderator IN (0,1)),
     value TEXT NOT NULL,
     PRIMARY KEY (name, user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
