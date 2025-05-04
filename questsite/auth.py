@@ -47,10 +47,10 @@ def register():
         password = request.form["password"]
 
         db = get_db()
-        if db.user_exists(username):
+        if db.userid_by_name(username):
             flash("Имя пользователя уже существует")
             return redirect(url_for("auth.register"))
-        
+
         password_hash = generate_password_hash(password)
 
         db.add_user(username, email, password_hash)

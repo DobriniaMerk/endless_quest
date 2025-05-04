@@ -87,7 +87,7 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)",
+            "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)" # DO NOT PLACE A COMMA HERE, THIS IS INTENDED
             "ON CONFLICT (name, user_id) DO UPDATE SET value = excluded.value",
             (name, user_id, visible, value),
         )
@@ -219,8 +219,18 @@ class DB:
         connection.close()
         return (row["id"], bool(row["is_moderator"])) if row else None
 
-    def user_exists(self, username: str):
+    def userid_by_name(self, username: str) -> Optional[int]:
+        """
+        Get user id by a name.
+
+        Args:
+            username (str): The username.
+
+        Returns:
+            Optional[int]: User id if found, else None.
+        """
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
-        return cursor.fetchone() is not None
+        row = cursor.fetchone()
+        return row["id"] if row else None

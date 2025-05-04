@@ -1,12 +1,27 @@
 import lark
 from flask import current_app
+from .db import DB
 
-def process_page(text: str) -> str:
+userid = None
+_db = None
+
+def get_db() -> DB:
+    global _db
+    if _db is None:
+        _db = DB(
+            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
+        )
+    return _db
+
+
+def process_page(text: str, id: int) -> str:
     """
     Evaluates all expressions in text and returns HTML
-    Args: Text to process
+    Args: Text to process, user id to get variables from
     Returns: HTML code of a processed page
     """
+    global userid
+    userid = id
     processed = ""
     root = parse(text)
     for node in root.children:
@@ -178,8 +193,12 @@ def getvar(name: str) -> str:
     Returns: Requested variable value
     Throws: KeyError if asked variable is not set
     """
-    # raise NotImplementedError  # waiting for DB implementation
-    raise KeyError
+    global userid
+    db = get_db()
+    val = db.get_variable(name, userid)
+    if val is None:
+        raise KeyError
+    return val
 
 class UnknownComparator(Exception):
     """

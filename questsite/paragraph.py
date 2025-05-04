@@ -1,8 +1,9 @@
 import re
 from random import randint
-from flask import Blueprint, redirect, render_template, request, url_for, current_app
+from flask import Blueprint, redirect, render_template, request, url_for, current_app, session
 from markdown import markdown
 import bleach
+from werkzeug.datastructures import MultiDict
 
 from .db import DB
 from . import parser
@@ -93,6 +94,16 @@ def clean(text: str) -> str:
     return bleach.clean(text, tags=[])
 
 
+def setvars(reqargs: MultiDict[str, str], username: str):
+    db = get_db()
+    id = db.userid_by_name(username)
+    if id is None:
+        return
+
+    for var, val in reqargs.items():
+        db.set_variable(var, id, val)
+
+
 @bp.route("/", methods=["GET"])
 def index():
     return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
@@ -100,6 +111,8 @@ def index():
 
 @bp.route("<lang>/<int:id>", methods=["GET", "POST"])
 def show(lang: str, id: int):
+    setvars(request.args, session["username"])
+
     if lang not in langs:
         return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
     if request.method == "POST":
@@ -117,9 +130,9 @@ def show(lang: str, id: int):
     #     paragraph['story'] = locale[lang]['show']['translate']['story']
     else:
         # paragraph['protected'] = bool(raw['protected'])
-        paragraph["story"] = parser.process_page(raw[0])
+        paragraph["story"] = parser.process_page(raw[0], db.userid_by_name(session["username"]))
         paragraph["title"] = raw[1]
-    paragraph["rendered"] = clean(paragraph["story"])
+    paragraph["rendered"] = paragraph["story"]
     return render_template(
         "paragraph/show.html",
         paragraph=paragraph,
