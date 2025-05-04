@@ -87,19 +87,6 @@ def new_paragraph(text: str) -> int:
 def clean(text : str) -> str:
     return bleach.clean(text, tags=[])
 
-def escape(text : str) -> str:
-    return re.sub(r'\[([^]]+)\]\(([^)]*[^\d)][^)]*)\)', r'[\1](\2)', text)
-
-def fill_links(text : str) -> str:
-    def fill(match):
-        return f'[{match.group(1)}]({new_paragraph()})'
-
-    def parenth(match):
-        return f'[{match.group(1)}]()'
-
-    text = re.sub(r'\[([^]\n]+)\](?!\()', parenth, text)
-    return re.sub(r'\[([^]\n]+)\]\(\)', fill, text)
-
 @bp.route('/', methods=['GET'])
 def index():
     return redirect(url_for('paragraph.show'), id=0, lang=langs[0])
