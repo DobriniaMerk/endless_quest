@@ -9,6 +9,16 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Handles user registration.
+
+    GET: Renders the registration form.
+    POST: Validates and saves the new user to the database, 
+          starts session on success.
+
+    Returns:
+        Union[str, Response]: HTML page or redirect to the first paragraph.
+    """
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -30,6 +40,16 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Handles user login.
+
+    GET: Renders the login form.
+    POST: Authenticates the user and starts a session.
+
+    Returns:
+        Union[str, Response]: Renders the login form or redirects to the start page if login is successful.
+    """
+
     if 'username' in session:
         return redirect(url_for('paragraph.show', id=0, lang=langs[0]))
     if request.method == 'POST':
@@ -46,6 +66,12 @@ def login():
 
 @auth_bp.route('/logout')
 def logout():
+    """
+    Logs the user out by clearing the session.
+
+    Returns:
+        Response: Redirects to the login page.
+    """
     session.clear()
     flash('Вы вышли из системы.', 'info')
     return redirect(url_for('auth.login'))
