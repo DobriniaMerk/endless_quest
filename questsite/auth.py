@@ -9,6 +9,8 @@ from flask import (
     current_app,
 )
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from .db import DB
 
 langs = ["ru", "en"]
@@ -48,8 +50,10 @@ def register():
         if db.user_exists(username):
             flash("Имя пользователя уже существует")
             return redirect(url_for("auth.register"))
+        
+        password_hash = generate_password_hash(password)
 
-        db.add_user(username, email, password)
+        db.add_user(username, email, password_hash)
         session["username"] = username
         return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
     return render_template("register.html")

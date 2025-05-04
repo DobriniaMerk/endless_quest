@@ -187,7 +187,7 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO users(username, email, password, is_moderator) VALUES (?, ?, ?, ?)",
+            "INSERT INTO users(username, email, password_hash, is_moderator) VALUES (?, ?, ?, ?)",
             (username, email, password_hash, int(is_moderator)),
         )
         user_id = cursor.lastrowid
