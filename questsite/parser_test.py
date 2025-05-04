@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from questsite.parser import process_page, parse, eval_if, eval_expr,parse_link, comp_eval
+from parser import process_page, parse, eval_if, eval_expr,parse_link, comp_eval
 
 class TestTemplateProcessor(unittest.TestCase):
     @patch('parser.getvar')
