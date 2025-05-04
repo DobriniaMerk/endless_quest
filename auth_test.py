@@ -17,27 +17,26 @@ class AuthTestCase(unittest.TestCase):
 
         # Инициализация БД
         with self.app.app_context():
+            from questsite import auth
             from questsite.db import DB
-            db = DB(self.db_path, schema_path="questsite/schema.sql")
 
-            password_hash = generate_password_hash("12345")
-            db.add_user("testuser", "test@example.com", password_hash)
+            db = DB(self.db_path, schema_path="questsite/schema.sql")
+            auth._db = db
+            db.add_user("testuser", "test@example.com", "12345")
 
 
     def tearDown(self):
         os.close(self.db_fd)
         os.unlink(self.db_path)
 
-    '''def test_register(self):
+    def test_register(self):
         response = self.client.post("/register", data={
             "username": "newuser",
             "email": "new@example.com",
             "password": "pass123"
         }, follow_redirects=True)
 
-        print(response.data.decode("utf-8"))
-
-        self.assertIn("newuser".encode("utf-8"), response.data)'''
+        self.assertIn("newuser".encode("utf-8"), response.data)
 
     def test_register_duplicate(self):
         response = self.client.post("/register", data={
@@ -48,15 +47,13 @@ class AuthTestCase(unittest.TestCase):
 
         self.assertIn("Имя пользователя уже существует".encode("utf-8"), response.data)
 
-    '''def test_login_success(self):
+    def test_login_success(self):
         response = self.client.post("/login", data={
             "username": "testuser",
             "password": "12345"
         }, follow_redirects=True)
 
-        print(response.data.decode("utf-8"))
-
-        self.assertIn(b"testuser", response.data)'''
+        self.assertIn(b"testuser", response.data)
 
     def test_login_wrong_password(self):
         response = self.client.post("/login", data={
