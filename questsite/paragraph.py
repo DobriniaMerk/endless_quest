@@ -1,7 +1,6 @@
 import re
 from random import randint
 from flask import Blueprint, redirect, render_template, request, url_for, current_app, session
-from markdown import markdown
 import bleach
 from werkzeug.datastructures import MultiDict
 
