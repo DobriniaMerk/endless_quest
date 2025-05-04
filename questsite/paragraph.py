@@ -119,7 +119,7 @@ def show(lang: str, id: int):
         # paragraph['protected'] = bool(raw['protected'])
         paragraph["story"] = parser.process_page(raw[0])
         paragraph["title"] = raw[1]
-    paragraph["rendered"] = paragraph["story"]
+    paragraph["rendered"] = clean(paragraph["story"])
     return render_template(
         "paragraph/show.html",
         paragraph=paragraph,
@@ -134,8 +134,8 @@ def edit(lang: str, id: int):
         return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
     db = get_db()
     if request.method == "POST":
-        title = clean(request.form["title"])
-        story = clean(request.form["story"])
+        title = request.form["title"]
+        story = request.form["story"]
         if not title:
             return redirect(url_for("paragraph.show", id=4096, lang=lang))
         edit_id = db.edit_paragraph(id, story, title, protected=False, lang=lang)
