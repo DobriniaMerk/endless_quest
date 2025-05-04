@@ -77,8 +77,12 @@ def login():
         db = get_db()
         user = db.find_user(request.form["username"], request.form["password"])
         if user:
-            session["username"] = request.form["username"]
-            return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+            user_id, is_moderator, password_hash = user
+            if check_password_hash(password_hash, request.form["password"]):
+                session["username"] = request.form["username"]
+                session["user_id"] = user_id
+                session["is_moderator"] = is_moderator 
+                return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
         flash("Неправильное имя пользователя или пароль")
     return render_template("login.html")
 

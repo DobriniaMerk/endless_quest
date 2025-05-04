@@ -2,6 +2,7 @@ import sqlite3
 import hashlib
 from typing import Optional, Any, Tuple
 from pathlib import Path
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class DB:
@@ -171,7 +172,7 @@ class DB:
         return new_edit_id
 
     def add_user(
-        self, username: str, email: str, password: str, is_moderator: bool = False
+        self, username: str, email: str, password_hash: str, is_moderator: bool = False
     ) -> int:
         """
         Create a new user account.
@@ -185,7 +186,6 @@ class DB:
         Returns:
             int: The ID of the newly created user.
         """
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
@@ -208,16 +208,17 @@ class DB:
         Returns:
             Optional[Tuple[int, bool]]: A tuple of (user_id, is_moderator) if found, else None.
         """
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT id, is_moderator FROM users WHERE username = ? AND password_hash = ?",
-            (username, password_hash),
+            "SELECT id, password_hash, is_moderator FROM users WHERE username = ?",
+            (username,)
         )
         row = cursor.fetchone()
         connection.close()
-        return (row["id"], bool(row["is_moderator"])) if row else None
+        if row and check_password_hash(row["password_hash"], password):
+            return (row["id"], bool(row["is_moderator"]), row["password_hash"])
+        return None
 
     def userid_by_name(self, username: str) -> Optional[int]:
         """
