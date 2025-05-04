@@ -51,9 +51,7 @@ def register():
             flash("Имя пользователя уже существует")
             return redirect(url_for("auth.register"))
 
-        password_hash = generate_password_hash(password)
-
-        db.add_user(username, email, password_hash)
+        db.add_user(username, email, password)
         session["username"] = username
         return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
     return render_template("register.html")

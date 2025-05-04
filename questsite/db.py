@@ -172,7 +172,7 @@ class DB:
         return new_edit_id
 
     def add_user(
-        self, username: str, email: str, password_hash: str, is_moderator: bool = False
+        self, username: str, email: str, password: str, is_moderator: bool = False
     ) -> int:
         """
         Create a new user account.
@@ -186,6 +186,7 @@ class DB:
         Returns:
             int: The ID of the newly created user.
         """
+        password_hash = generate_password_hash(password)
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
