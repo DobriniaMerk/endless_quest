@@ -192,6 +192,7 @@ class UnknownComparator(Exception):
 class UnknownNode(Exception):
     """
     Raised when node name is not matched.
+    Does not expected to be raised under normal circumstances
     """
     def __init__(self, msg):
         self.message = msg
