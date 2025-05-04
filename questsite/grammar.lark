@@ -1,4 +1,4 @@
-?start: something+
+start: something+
 
 ?special: subst
         | if
