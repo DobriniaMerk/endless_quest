@@ -95,7 +95,7 @@ def clean(text: str) -> str:
 
 @bp.route("/", methods=["GET"])
 def index():
-    return redirect(url_for("paragraph.show"), id=0, lang=langs[0])
+    return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
 
 
 @bp.route("<lang>/<int:id>", methods=["GET", "POST"])
