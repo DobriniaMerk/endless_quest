@@ -115,7 +115,7 @@ class DB:
         if not row or not row[column]:
             connection.close()
             return None
-        cursor.execute("SELECT story, title FROM edits WHERE id = ?", (paragraph_id,))
+        cursor.execute("SELECT story, title FROM edits WHERE id = ?", (row[column],))
         story_row = cursor.fetchone()
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
@@ -124,6 +124,7 @@ class DB:
         self,
         paragraph_id: int,
         new_text: str,
+        new_title: str,
         protected: bool = False,
         lang: str = "ru",
     ) -> int:
@@ -133,6 +134,7 @@ class DB:
         Args:
             paragraph_id (int): The ID of the paragraph.
             new_text (str): The new content of the paragraph.
+            new_title (str): The new title of paragraph.
             protected (bool, optional): Whether the paragraph is protected. Defaults to False.
             lang (str, optional): The language ('ru' or 'en'). Defaults to 'ru'.
 
@@ -156,8 +158,8 @@ class DB:
                 (paragraph_id, int(protected)),
             )
         cursor.execute(
-            "INSERT INTO edits(paragraph, lang, previous, story) VALUES (?, ?, ?, ?)",
-            (paragraph_id, lang, previous_edit, new_text),
+            "INSERT INTO edits(paragraph, lang, previous, story, title) VALUES (?, ?, ?, ?, ?)",
+            (paragraph_id, lang, previous_edit, new_text, new_title),
         )
         new_edit_id = cursor.lastrowid
         cursor.execute(
@@ -220,5 +222,5 @@ class DB:
     def user_exists(self, username: str):
         connection = self._connect()
         cursor = connection.cursor()
-        cursor.execute("SELECT id FROM users WHERE username = ?", (username))
+        cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
         return cursor.fetchone() is not None

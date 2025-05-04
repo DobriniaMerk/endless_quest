@@ -138,7 +138,7 @@ def edit(lang: str, id: int):
         story = clean(request.form["story"])
         if not title:
             return redirect(url_for("paragraph.show", id=4096, lang=lang))
-        edit_id = db.edit_paragraph(id, story, protected=False, lang=lang)
+        edit_id = db.edit_paragraph(id, story, title, protected=False, lang=lang)
         return redirect(url_for("paragraph.show", id=id, lang=lang))
     raw = db.get_paragraph(id, lang)
     title = ""
