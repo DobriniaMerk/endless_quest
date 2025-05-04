@@ -188,3 +188,12 @@ class DB:
         row = cursor.fetchone()
         connection.close()
         return (row['id'], bool(row['is_moderator'])) if row else None
+
+    def user_exists(self, username : str):
+        connection = self._connect()
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT id FROM users WHERE username = ?",
+            (username)
+        )
+        return cursor.fetchone() is not None
