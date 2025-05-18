@@ -1,6 +1,7 @@
 instance/
 backups/
 .envrc
+.idea/
 
 # emacs autosave files
 *~
