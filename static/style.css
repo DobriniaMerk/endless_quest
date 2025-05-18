@@ -1,4 +1,3 @@
-
 .user-info {
   position: fixed;
   top: 10px;
@@ -55,4 +54,54 @@ textarea {
 
 .content :is(h1, h2, h3, h4, h5, h6) {
   filter: brightness(165%);
+}
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+}
+
+.dark-theme {
+  --bg-color: #1e1e1e;
+  --text-color: #e0e0e0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+} 
+
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* расстояние между блоком пользователя и кнопкой */
+  margin-left: auto; /* чтобы занять правую сторону */
+}
+
+.user-info {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  /* Убрать fixed, чтобы она шла в ряд с кнопкой */
+  position: static;
+}
+
+#themeToggle {
+  cursor: pointer;
+  font-size: 14px;
+  background-color: transparent;
+  border: 2px solid var(--text-color);
+  color: var(--text-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+#themeToggle:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border-color: var(--text-color);
 }
