@@ -1,8 +1,8 @@
 import unittest
-from questsite.__init__ import create_app
+from app import create_app
 import os
 import tempfile
-from werkzeug.security import generate_password_hash
+from db import get_db, clear_db
 
 class AuthTestCase(unittest.TestCase):
     def setUp(self):
@@ -12,20 +12,19 @@ class AuthTestCase(unittest.TestCase):
             "TESTING": True,
             "DATABASE_PATH": self.db_path,
             "SECRET_KEY": "test",
+            "SCHEMA_PATH": "db/schema.sql",
         })
+        self.ctx = self.app.app_context()
+        self.ctx.push()
         self.client = self.app.test_client()
 
-        # Инициализация БД
-        with self.app.app_context():
-            from questsite import auth
-            from questsite.db import DB
-
-            db = DB(self.db_path, schema_path="questsite/schema.sql")
-            auth._db = db
-            db.add_user("testuser", "test@example.com", "12345")
+        clear_db()
+        _db = get_db()
+        _db.add_user("testuser", "test@example.com", "12345")
 
 
     def tearDown(self):
+        self.ctx.pop()
         os.close(self.db_fd)
         os.unlink(self.db_path)
 
@@ -36,7 +35,7 @@ class AuthTestCase(unittest.TestCase):
             "password": "pass123"
         }, follow_redirects=True)
 
-        self.assertIn("newuser".encode("utf-8"), response.data)
+        self.assertIn("newuser", response.data.decode("utf-8"))
 
     def test_register_duplicate(self):
         response = self.client.post("/register", data={
@@ -45,7 +44,7 @@ class AuthTestCase(unittest.TestCase):
             "password": "pass456"
         }, follow_redirects=True)
 
-        self.assertIn("Имя пользователя уже существует".encode("utf-8"), response.data)
+        self.assertIn("Имя пользователя уже существует", response.data.decode("utf-8"))
 
     def test_login_success(self):
         response = self.client.post("/login", data={
@@ -53,7 +52,7 @@ class AuthTestCase(unittest.TestCase):
             "password": "12345"
         }, follow_redirects=True)
 
-        self.assertIn(b"testuser", response.data)
+        self.assertIn("testuser", response.data.decode("utf-8"))
 
     def test_login_wrong_password(self):
         response = self.client.post("/login", data={
@@ -61,7 +60,7 @@ class AuthTestCase(unittest.TestCase):
             "password": "wrongpassword"
         }, follow_redirects=True)
 
-        self.assertIn("Неправильное имя пользователя или пароль".encode("utf-8"), response.data)
+        self.assertIn("Неправильное имя пользователя или пароль", response.data.decode("utf-8"))
 
     def test_logout(self):
         self.client.post("/login", data={
@@ -71,8 +70,8 @@ class AuthTestCase(unittest.TestCase):
 
         response = self.client.get("/logout", follow_redirects=True)
 
-        self.assertIn("Вы вышли из системы.".encode("utf-8"), response.data)
+        self.assertIn("Вы вышли из системы.", response.data.decode("utf-8"))
 
-    
+
 if __name__ == '__main__':
     unittest.main()

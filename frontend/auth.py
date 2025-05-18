@@ -6,10 +6,7 @@ from flask import (
     flash,
     request,
     session,
-    current_app,
 )
-
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import get_db
 
@@ -57,19 +54,17 @@ def login():
     Returns:
         Union[str, Response]: Renders the login form or redirects to the start page if login is successful.
     """
-
     if "username" in session:
         return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
     if request.method == "POST":
         db = get_db()
         user = db.find_user(request.form["username"], request.form["password"])
         if user:
-            user_id, is_moderator, password_hash = user
-            if check_password_hash(password_hash, request.form["password"]):
-                session["username"] = request.form["username"]
-                session["user_id"] = user_id
-                session["is_moderator"] = is_moderator
-                return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+            user_id, is_moderator = user
+            session["username"] = request.form["username"]
+            session["user_id"] = user_id
+            session["is_moderator"] = is_moderator
+            return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
         flash("Неправильное имя пользователя или пароль")
     return render_template("login.html")
 
