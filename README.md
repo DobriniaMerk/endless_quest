@@ -1,5 +1,5 @@
 # Launching
 ```
 pip install -r requirements.txt
-flask --app questsite run 
+FLASK_APP="app:create_app()" flask run
 ```
