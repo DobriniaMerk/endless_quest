@@ -11,22 +11,11 @@ from flask import (
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .db import DB
+from db import get_db
 
 langs = ["ru", "en"]
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/")
-
-_db = None
-
-
-def get_db() -> DB:
-    global _db
-    if _db is None:
-        _db = DB(
-            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
-        )
-    return _db
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
@@ -79,7 +68,7 @@ def login():
             if check_password_hash(password_hash, request.form["password"]):
                 session["username"] = request.form["username"]
                 session["user_id"] = user_id
-                session["is_moderator"] = is_moderator 
+                session["is_moderator"] = is_moderator
                 return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
         flash("Неправильное имя пользователя или пароль")
     return render_template("login.html")

@@ -1,8 +1,8 @@
 import sqlite3
-import hashlib
-from typing import Optional, Any, Tuple
+from typing import Optional, Tuple
 from pathlib import Path
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
 
 
 class DB:
@@ -236,3 +236,14 @@ class DB:
         cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
         row = cursor.fetchone()
         return row["id"] if row else None
+
+_db = None
+
+
+def get_db() -> DB:
+    global _db
+    if _db is None:
+        _db = DB(
+            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
+        )
+    return _db

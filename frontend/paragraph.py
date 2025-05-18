@@ -4,8 +4,8 @@ from flask import Blueprint, redirect, render_template, request, url_for, curren
 import bleach
 from werkzeug.datastructures import MultiDict
 
-from .db import DB
-from . import parser
+from db import get_db
+import parser
 
 bp = Blueprint("paragraph", __name__, url_prefix="/")
 
@@ -60,18 +60,6 @@ locale = {
         },
     },
 }
-
-_db = None
-
-
-def get_db() -> DB:
-    global _db
-    if _db is None:
-        _db = DB(
-            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
-        )
-    return _db
-
 
 # def new_paragraph(text: str) -> int:
 #     """Generate a new paragraph ID not yet in use"""

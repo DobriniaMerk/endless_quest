@@ -1,18 +1,8 @@
 import lark
 from flask import current_app
-from .db import DB
+from db import get_db
 
 userid = None
-_db = None
-
-def get_db() -> DB:
-    global _db
-    if _db is None:
-        _db = DB(
-            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
-        )
-    return _db
-
 
 def process_page(text: str, id: int) -> str:
     """
@@ -194,8 +184,8 @@ def getvar(name: str) -> str:
     Throws: KeyError if asked variable is not set
     """
     global userid
-    db = get_db()
-    val = db.get_variable(name, userid)
+
+    val = get_db().get_variable(name, userid)
     if val is None:
         raise KeyError
     return val
