@@ -1,8 +1,9 @@
 import re
 from random import randint
-from flask import Blueprint, redirect, render_template, request, url_for, current_app, session
+from flask import Blueprint, redirect, render_template, request, url_for, session, make_response
 import bleach
 from werkzeug.datastructures import MultiDict
+import json
 
 from db import get_db
 import parser
@@ -81,7 +82,7 @@ def clean(text: str) -> str:
     return bleach.clean(text, tags=[])
 
 
-def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str):
+def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str | None):
     if username:
       db = get_db()
       id = db.userid_by_name(username)
@@ -99,7 +100,7 @@ def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str):
         for var, val in reqargs.items():
             variables[var] = val
         resp = make_response(redirect(redirect_arg))
-        resp.set_cookie('guest_vars', json.dumps(variables), max_age = 720*3600)  
+        resp.set_cookie('guest_vars', json.dumps(variables), max_age = 720*3600)
         return resp
 
 @bp.route("/", methods=["GET"])
@@ -109,10 +110,10 @@ def index():
 
 @bp.route("<lang>/<int:id>", methods=["GET", "POST"])
 def show(lang: str, id: int):
-    resp = setvars(request.args, '{lang}/{id}', session["username"])
-
-    if resp:
-        return resp   
+    if len(request.args) > 0:
+        resp = setvars(request.args, f'{id}', session.get("username"))
+        if resp:
+            return resp
 
     if lang not in langs:
         return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
@@ -123,7 +124,7 @@ def show(lang: str, id: int):
     raw = db.get_paragraph(id, lang)
     exists = bool(raw)
     paragraph = {"id": id, "lang": lang, "title": "", "story": "", "protected": False}
-    if not exists:  
+    if not exists:
         paragraph["title"] = locale[lang]["show"]["not_written"]["title"]
         paragraph["story"] = locale[lang]["show"]["not_written"]["story"]
     # elif raw[f'current_{lang}'] is None:
@@ -131,7 +132,7 @@ def show(lang: str, id: int):
     #     paragraph['story'] = locale[lang]['show']['translate']['story']
     else:
         def variable_getter(key):
-            if username:
+            if "username" in session.keys():
                 user_id = db.userid_by_name(session["username"])
                 val = db.get_variable(key, user_id)
                 if val is None:

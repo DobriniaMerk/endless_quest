@@ -2,7 +2,7 @@ import lark
 from flask import current_app
 from db import get_db
 
-getvar = None
+getvar_cb = None
 
 def process_page(text: str, variable_getter) -> str:
     """
@@ -10,8 +10,8 @@ def process_page(text: str, variable_getter) -> str:
     Args: Text to process, user id to get variables from
     Returns: HTML code of a processed page
     """
-    global getvar
-    getvar = variable_getter
+    global getvar_cb
+    getvar_cb = variable_getter
     processed = ""
     root = parse(text)
     for node in root.children:
@@ -176,19 +176,14 @@ def comp_eval(node: lark.tree.Tree) -> bool:
             return comp_eval(node.children[0]) and comp_eval(node.children[1])
     raise UnknownNode(node.data)
 
-# def getvar(name: str) -> str:
-#     """
-#     Gets variable value from database. If value is not present — throws.
+def getvar(name: str) -> str:
+    """
+    Gets variable value from database. If value is not present — throws.
 
-#     Returns: Requested variable value
-#     Throws: KeyError if asked variable is not set
-#     """
-#     global userid
-
-#     val = get_db().get_variable(name, userid)
-#     if val is None:
-#         raise KeyError
-#     return val
+    Returns: Requested variable value
+    Throws: KeyError if asked variable is not set
+    """
+    return getvar_cb(name)
 
 class UnknownComparator(Exception):
     """
