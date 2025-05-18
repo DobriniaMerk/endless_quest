@@ -98,7 +98,10 @@ def index():
 
 @bp.route("<lang>/<int:id>", methods=["GET", "POST"])
 def show(lang: str, id: int):
-    setvars(request.args, session["username"])
+    try:
+        setvars(request.args, session["username"])
+    except:
+        pass
 
     if lang not in langs:
         return redirect(url_for("paragraph.show", id=id, lang=langs[0]))

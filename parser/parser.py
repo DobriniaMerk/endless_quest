@@ -3,6 +3,7 @@ from flask import current_app
 from db import get_db
 
 userid = None
+grammar = None
 
 def process_page(text: str, id: int) -> str:
     """
@@ -23,6 +24,10 @@ def load_grammar() -> str:
     """
     Loads grammar file and returns it's contents
     """
+    global grammar
+    if grammar is not None:
+        return grammar
+
     grammar_path = current_app.config['GRAMMAR_PATH']
     with open(grammar_path) as f:
         grammar = f.read()

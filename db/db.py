@@ -33,12 +33,12 @@ class DB:
             raise FileNotFoundError(f"Schema file not found: {schema_file}")
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
-            cur.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='variables'"
-            )
-            if cur.fetchone():
-                return
+            # cur = conn.cursor()
+            # cur.execute(
+            #     "SELECT name FROM sqlite_master WHERE type='table' AND name='variables'"
+            # )
+            # if cur.fetchone():
+            #     return
             script = schema_file.read_text(encoding="utf-8")
             conn.executescript(script)
 
@@ -218,7 +218,7 @@ class DB:
         row = cursor.fetchone()
         connection.close()
         if row and check_password_hash(row["password_hash"], password):
-            return (row["id"], bool(row["is_moderator"]), row["password_hash"])
+            return (row["id"], bool(row["is_moderator"]))
         return None
 
     def userid_by_name(self, username: str) -> Optional[int]:
@@ -244,6 +244,10 @@ def get_db() -> DB:
     global _db
     if _db is None:
         _db = DB(
-            current_app.config["DATABASE_PATH"], current_app.config.get("SCHEMA_PATH")
+            current_app.config["DATABASE_PATH"], current_app.config["SCHEMA_PATH"]
         )
     return _db
+
+def clear_db() -> None:
+    global _db
+    _db = None
