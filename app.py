@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session
+from flask import Flask, redirect, url_for
 from frontend import auth_bp, bp
 
 def create_app(test_config=None):
@@ -19,6 +19,10 @@ def create_app(test_config=None):
     # else:
     #     # load the test config if passed in
     #     app.config.from_mapping(test_config)
+
+    @app.route("/")
+    def index():
+        return redirect(url_for("auth.register"))
 
     @app.route("/lorem")
     def test():
