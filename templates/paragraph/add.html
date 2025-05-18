@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 
+{% block title %}Добавить параграф{% endblock %}
+
 {% block header %}
-    <h1>{% block title %}Add Paragraph{% endblock %}</h1>
+  <h1 class="h4"><i class="fa-solid fa-plus me-2"></i>Добавить параграф</h1>
 {% endblock %}
 
 {% block content %}
-    <form method="post">
-        <label for="title">Title</label>
-        <input name="title" id="title" required>
-        <label for="story">Story</label>
-        <textarea name="story" id="story" required></textarea>
-        <input type="submit" value="Add">
-    </form>
-
+<div class="card p-4 shadow-sm mt-4">
+  <form method="post" class="d-flex flex-column gap-3">
+    <div>
+      <label for="title" class="form-label">Заголовок</label>
+      <input name="title" id="title" class="form-control" required>
+    </div>
+    <div>
+      <label for="story" class="form-label">История</label>
+      <textarea name="story" id="story" class="form-control" rows="8" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">
+      <i class="fa-solid fa-paper-plane me-1"></i> Добавить
+    </button>
+  </form>
+</div>
 {% endblock %}

@@ -1,115 +1,61 @@
-
-.content {
-  margin: auto;
-  max-width: 600px;
-}
-
-nav {
-  max-width: 800px;
-  margin-inline: auto;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-nav h1 {
-  flex: 1;
-  font-size: 160%;
-}
-
-.flex-right {
-  margin-left: auto;
-}
-
-.edit {
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.edit label {
-  margin-bottom: 7px;
-  padding-left: 10px;
-}
-
-.edit input {
-  margin-bottom: 15px;
-}
-
-textarea {
-  height: 40vh;
-}
-
-.content :is(h1, h2, h3, h4, h5, h6) {
-  filter: brightness(165%);
-}
-
 :root {
   --bg-color: #ffffff;
-  --text-color: #000000;
+  --text-color: #212529;
+  --accent-color: #0d6efd;
 }
 
 .dark-theme {
   --bg-color: #1e1e1e;
   --text-color: #e0e0e0;
+  --accent-color: #0d6efd;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
   transition: background 0.3s, color 0.3s;
-} 
+}
 
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
 
-.right-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* расстояние между блоком пользователя и кнопкой */
-  margin-left: auto; /* чтобы занять правую сторону */
+a:hover {
+  text-decoration: underline;
+}
+
+.main-header {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .user-info {
-  font-size: 16px;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-  /* Убрать fixed, чтобы она шла в ряд с кнопкой */
-  position: static;
+  font-size: 14px;
+  text-align: right;
 }
 
 #themeToggle {
-  cursor: pointer;
-  font-size: 14px;
-  background-color: transparent;
-  border: 2px solid var(--text-color);
-  color: var(--text-color);
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  font-size: 0.8rem;
 }
 
-#themeToggle:hover {
-  background-color: var(--text-color);
-  color: var(--bg-color);
-  border-color: var(--text-color);
+
+.content {
+  padding-top: 20px;
 }
 
-.container {
-  width: 80%;
-  margin: auto;
+form label {
+  font-weight: 500;
+  margin-top: 10px;
 }
 
-@media (max-width: 768px) {
-  .container {
-    width: 95%;
-  }
+form input, form textarea {
+  margin-bottom: 15px;
+}
 
-  .some-element {
-    flex-direction: column;
-  }
-
-  nav {
-    display: block;
-  }
+i.fa-solid {
+  color: #0d6efd;
+  vertical-align: middle;
 }

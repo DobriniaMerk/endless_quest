@@ -1,20 +1,38 @@
 {% extends 'base.html' %}
-{% block title %}Paragraph{% endblock %}
+
+{% block title %}{{ paragraph['title'] }}{% endblock %}
 
 {% block header %}
-  <h1>{{ paragraph['id'] }} — {{ paragraph['title'] }}</h1>
-  <form method="post" class="flex-right">
-    <input name="id" type="number" min="0"  value="{{ paragraph['id'] }}" required>
-    <input type="submit" value="{{ locale['goto'] }}">
-  </form>
-  {% if paragraph['protected'] == 0 %}
-    <a class="edit flex-right" href="{{ url_for('paragraph.edit', lang=paragraph['lang'], id=paragraph['id']) }}">{% if exists %} {{ locale['edit'] }} {% else %} {{ locale['add'] }} {% endif %}</a>
-  {% else %}
-    <a>{{ locale['edit'] }}</a>
-  {% endif %}
-  <a class="lang" href="{{ url_for('paragraph.show', lang=('en' if paragraph['lang'] == 'ru' else 'ru'), id=paragraph['id']) }}">{% if paragraph['lang'] == 'en' %} ru {% else %} en {% endif %}</a>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+    <h1 class="h4 m-0">{{ paragraph['id'] }} — {{ paragraph['title'] }}</h1>
+
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <form method="post" class="d-flex align-items-center gap-2 m-0">
+        <input name="id" type="number" class="form-control form-control-sm" min="0" value="{{ paragraph['id'] }}" required>
+        <button class="btn btn-sm btn-primary" type="submit">
+          <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> {{ locale['goto'] }}
+        </button>
+      </form>
+
+      {% if paragraph['protected'] == 0 %}
+        <a class="btn btn-sm btn-primary" href="{{ url_for('paragraph.edit', lang=paragraph['lang'], id=paragraph['id']) }}">
+          <i class="fa-solid fa-pen me-1"></i>
+          {% if exists %} {{ locale['edit'] }} {% else %} {{ locale['add'] }} {% endif %}
+        </a>
+      {% else %}
+        <span class="text-muted small">{{ locale['edit'] }}</span>
+      {% endif %}
+
+      <a class="btn btn-sm btn-primary" href="{{ url_for('paragraph.show', lang=('en' if paragraph['lang'] == 'ru' else 'ru'), id=paragraph['id']) }}">
+        <i class="fa-solid fa-language me-1"></i>
+        {% if paragraph['lang'] == 'en' %} ru {% else %} en {% endif %}
+      </a>
+    </div>
+  </div>
 {% endblock %}
 
 {% block content %}
-  {{ paragraph['rendered'] | safe}}
+  <div class="mt-4">
+    {{ paragraph['rendered'] | safe }}
+  </div>
 {% endblock %}

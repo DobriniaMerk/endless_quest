@@ -1,19 +1,30 @@
 {% extends 'base.html' %}
 
+{% block title %}Редактировать параграф{% endblock %}
+
 {% block header %}
-    <h1>{% block title %} {{ locale['page-title'] }} {% endblock %}</h1>
+  <h1 class="h4"><i class="fa-solid fa-pen-to-square me-2"></i>{{ locale['page-title'] }}</h1>
 {% endblock %}
 
 {% block content %}
-    <form class="edit" method="post">
-      <label for="title">{{ locale['title'] }}</label>
-        <input name="title" id="title" value="{{ paragraph['title'] }}" required>
-        <label for="story"> {{ locale['story'] }}</label>
-        <textarea name="story" id="story" required>{{ paragraph['story'] }}</textarea>
-        <div>
-            <input type="submit" value="{{ locale['save'] }}">
-            <a href="{{ url_for('paragraph.show', id=paragraph['id'], lang=ln) }}"> {{ locale['cancel'] }} </a>
-        </div>
-    </form>
-
+<div class="card p-4 shadow-sm mt-4">
+  <form method="post" class="d-flex flex-column gap-3">
+    <div>
+      <label for="title" class="form-label">{{ locale['title'] }}</label>
+      <input name="title" id="title" class="form-control" value="{{ paragraph['title'] }}" required>
+    </div>
+    <div>
+      <label for="story" class="form-label">{{ locale['story'] }}</label>
+      <textarea name="story" id="story" class="form-control" rows="8" required>{{ paragraph['story'] }}</textarea>
+    </div>
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk me-1"></i> {{ locale['save'] }}
+      </button>
+      <a href="{{ url_for('paragraph.show', id=paragraph['id'], lang=ln) }}" class="btn btn-primary">
+        <i class="fa-solid fa-xmark me-1"></i> {{ locale['cancel'] }}
+      </a>
+    </div>
+  </form>
+</div>
 {% endblock %}
