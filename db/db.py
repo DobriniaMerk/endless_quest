@@ -33,12 +33,12 @@ class DB:
             raise FileNotFoundError(f"Schema file not found: {schema_file}")
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            # cur = conn.cursor()
-            # cur.execute(
-            #     "SELECT name FROM sqlite_master WHERE type='table' AND name='variables'"
-            # )
-            # if cur.fetchone():
-            #     return
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='variables'"
+            )
+            if cur.fetchone():
+                return
             script = schema_file.read_text(encoding="utf-8")
             conn.executescript(script)
 
