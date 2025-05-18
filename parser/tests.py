@@ -10,20 +10,21 @@ mock_load_grammar = load_grammar_patcher.start()
 from parser import process_page, parse, eval_if, eval_expr,parse_link, comp_eval
 
 class TestTemplateProcessor(unittest.TestCase):
-    def test_process_page_simple_text(self):
-        result = process_page("Hello world", 1337)
+    @patch('parser.getvar')
+    def test_process_page_simple_text(self, mock_getvar):
+        result = process_page("Hello world", None)
         self.assertEqual(result, "Hello world")
 
     @patch('parser.parser.getvar')
     def test_process_page_simple_subst(self, mock_getvar):
         mock_getvar.return_value = "5"
-        result = process_page("[x]", 1337)
+        result = process_page("[x]", None)
         self.assertEqual(result, "5")
 
     @patch('parser.parser.getvar')
     def test_process_page_subst_with_default(self, mock_getvar):
         mock_getvar.side_effect = KeyError("x")
-        result = process_page("[x|10]", 1337)
+        result = process_page("[x|10]", None)
         self.assertEqual(result, "10")
 
     @patch('parser.parser.getvar')
