@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Register</title>
-</head>
-<body>
+    <link rel=stylesheet href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preload" href="/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg" as="image">
+  </head>
+  <body>
+    <div id="bg"></div>
     <h1>Регистрация</h1>
     <form method="POST">
-        <label for="username">Имя пользователя:</label>
-        <input type="text" name="username" required><br>
+      <label for="username">Имя пользователя:</label>
+      <input type="text" name="username" required><br>
 
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
+      <label for="email">Email:</label>
+      <input type="email" name="email" required><br>
 
-        <label for="password">Пароль:</label>
-        <input type="password" name="password" required><br>
+      <label for="password">Пароль:</label>
+      <input type="password" name="password" required><br>
 
-        <button type="submit">Зарегистрироваться</button>
+      <button type="submit">Зарегистрироваться</button>
     </form>
 
     <p>Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войти</a></p>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+    <ul>
+      {% for msg in messages %}
+      <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
     {% endwith %}
-</body>
+  </body>
 </html>
