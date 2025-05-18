@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     is_moderator INTEGER NOT NULL DEFAULT 0 CHECK (is_moderator IN (0,1)),
     created_at TIMESTAMP NOT NULL DEFAULT (datetime('now')),
     last_login TEXT
+    last_page TEXT
 );
 
 CREATE TRIGGER IF NOT EXISTS users_set_created_at
