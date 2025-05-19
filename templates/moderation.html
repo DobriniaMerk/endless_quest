@@ -1,10 +1,11 @@
 <h1>Модерация правок</h1>
 <ul>
-  {% for edit in edits %}
-    <li>
-      <a href="{{ url_for('review_edit', edit_id=edit.id) }}">
-        Правка #{{ edit.id }} параграфа {{ edit.paragraph_id }} [{{ edit.lang }}]
-      </a>
-    </li>
+  {% for i, version in enumerate(version) %}
+  <li>
+    <h2>{{ version[1] }} {% if can_rever %} <a href="{{ url_for('moderation.history', lang=lang, id=id, _method='POST', revision=i) }}">Вернуться к этой версии</a> {% endif %}</h2>
+    <div>
+      {{ version[0] }}
+    </div>
+  </li>
   {% endfor %}
 </ul>

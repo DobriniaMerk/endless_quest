@@ -1,5 +1,3 @@
-import re
-from random import randint
 from flask import Blueprint, redirect, render_template, request, url_for, session, make_response
 import bleach
 from werkzeug.datastructures import MultiDict
@@ -8,7 +6,7 @@ import json
 from db import get_db
 import parser
 
-bp = Blueprint("paragraph", __name__, url_prefix="/")
+paragraph_bp = Blueprint("paragraph", __name__, url_prefix="/")
 
 langs = ["ru", "en"]
 
@@ -129,12 +127,12 @@ def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str | None):
         resp.set_cookie('guest_vars', json.dumps(variables), max_age = 720*3600)
         return resp
 
-@bp.route("/", methods=["GET"])
+@paragraph_bp.route("/", methods=["GET"])
 def index():
     return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
 
 
-@bp.route("<lang>/<int:id>", methods=["GET", "POST"])
+@paragraph_bp.route("<lang>/<int:id>", methods=["GET", "POST"])
 def show(lang: str, id: int):
     if len(request.args) > 0:
         resp = setvars(request.args, f'{id}', session.get("username"))
@@ -183,7 +181,7 @@ def show(lang: str, id: int):
     )
 
 
-@bp.route("<lang>/<int:id>/edit", methods=["GET", "POST"])
+@paragraph_bp.route("<lang>/<int:id>/edit", methods=["GET", "POST"])
 def edit(lang: str, id: int):
     if lang not in langs:
         return redirect(url_for("paragraph.show", id=id, lang=langs[0]))
