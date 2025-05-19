@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Аккаунт{% endblock %}
+
+{% block content %}
+  <div class="card shadow-sm p-4 mb-4">
+    <h2 class="mb-4 display-6">Профиль</h2>
+
+    <p class="fs-5">
+      <strong>Имя пользователя:</strong> {{ username }}
+    </p>
+  </div>
+
+  <div class="text-center mt-5">
+    {% if session.get('username') %}
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger btn-lg px-5">
+        {{ locale['menu']['logout'] }}
+      </a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-5">
+        {{ locale['menu']['login'] }}
+      </a>
+    {% endif %}
+  </div>
+{% endblock %}

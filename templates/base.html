@@ -34,9 +34,17 @@
       <div class="p-3">
         <h5 class="mb-3">{{ locale['menu']['main_menu'] }}</h5>
         <ul class="nav flex-column">
-          <li class="nav-item"><a class="nav-link" href="/"> {{ locale['menu']['account'] }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('paragraph.account') }}">{{ locale['menu']['account'] }}</a></li>
           <li class="nav-item"><a class="nav-link" href="/profile"> {{ locale['menu']['inventory'] }}</a></li>
           
+          <li class="nav-item">
+            {% if paragraph %}
+            <a class="nav-link" href="{{ url_for('moderation.history', lang=paragraph.lang, id=paragraph.id) }}">
+              {{ locale['menu']['history'] }}
+            </a>
+            {% endif %}
+          </li>
+
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {{ locale['menu']['choose_design'] }}
@@ -51,11 +59,33 @@
 
           {% if paragraph %}
             <hr>
+            <li class="nav-item">
+              {% if request.endpoint and request.view_args and 'lang' in request.view_args %}
+                {% set args = request.view_args.copy() %}
+                {% if args['lang'] == 'ru' %}
+                  {% set temp = args.copy() %}
+                  {% set _ = temp.update({'lang': 'en'}) %}
+                  {% set args = temp %}
+                {% else %}
+                  {% set temp = args.copy() %}
+                  {% set _ = temp.update({'lang': 'ru'}) %}
+                  {% set args = temp %}
+                {% endif %}
+
+              {% for key, value in request.args.items() %}
+                {% set temp = args.copy() %}
+                {% set _ = temp.update({key: value}) %}
+                {% set args = temp %}
+              {% endfor %}
+
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('paragraph.show', lang=('en' if paragraph.lang == 'ru' else 'ru'), id=paragraph.id) }}">
-                  {{ 'EN' if paragraph.lang == 'ru' else 'RU' }}
+                <a class="nav-link" href="{{ url_for(request.endpoint, **args) }}">
+                  {{ 'EN' if args['lang'] == 'en' else 'RU' }}
                 </a>
               </li>
+              {% endif %}
+            </li>
+
 
             {% if not paragraph.protected %}
               <li class="nav-item">
@@ -71,11 +101,12 @@
           {% endif %}
 
         
-          {% if session.get('username') %}
-            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"> {{ locale['menu']['logout'] }}</a></li>
-          {% else %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"> {{ locale['menu']['login'] }}</a></li>
-          {% endif %}
+          <li class="nav-item mt-2">
+            <button onclick="history.back()" class="btn btn-outline-secondary w-100">
+              {{ locale['menu']['back'] }}
+            </button>
+          </li>
+
         </ul>
       </div>
     </aside>
@@ -83,6 +114,12 @@
 
   <!--  для работы выпадающего меню -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-qJYIGdknXrM5KZ6YPZyPVHnGJvYt1TRe+30pWzFOMQl7ewkkXzPj0L7et6HiZ+jT"
+          crossorigin="anonymous"></script>
+
+  {% block scripts %}{% endblock %}
 
 </body>
 </html>
@@ -113,3 +150,4 @@
   const savedTheme = localStorage.getItem('theme') || 'system';
   applyTheme(savedTheme);
 </script>
+

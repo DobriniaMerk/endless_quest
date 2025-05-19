@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, make_response
 from db import get_db
+from .paragraph import locale
 
 moderation_bp = Blueprint("moderation", __name__, url_prefix="/")
 
@@ -12,10 +13,17 @@ def history(lang: str, id: int):
         name = session.get("username")
         can_revert = False
         if name is not None and db.is_moderator(name):
-            can_revert = True;
-        return render_template("history.html", versions=versions, lang=lang, id=id, can_revert=can_revert)
+            can_revert = True
+            
+        raw = db.get_paragraph(id, lang)
+        paragraph = {"id": id, "lang": lang, "title": "", "story": "", "protected": False}
+        if raw:
+            paragraph["story"] = raw[0]
+            paragraph["title"] = raw[1]
+        return render_template("history.html", versions=versions, lang=lang, id=id, can_revert=can_revert, locale=locale[lang], paragraph=paragraph)
+
     try:
         db.revert_paragraph(id, lang, int(request.args["revision"]))
     except:
         redirect(url_for("moderation.history", lang=lang, id=id))
-    return redirect(url_for("paragraph.show", lang=lang, id=id))
+    return redirect(url_for("moderation.history", lang=lang, id=id))

@@ -39,8 +39,10 @@ locale = {
             "inventory": "Инвентарь",
             "main_menu": "Меню",
             "choose_design": "Выбрать оформление",
+            "history": "История",
             "logout": "Выйти",
-            "logout": "Войти",
+            "login": "Войти",
+            "back": "Назад",
         },
         "theme": {
             "light_theme": "Светлая тема",
@@ -75,8 +77,10 @@ locale = {
             "inventory": "Inventory",
             "main_menu": "Menu",
             "choose_design": "Choose a design",
+            "history": "History",
             "logout": "Log out",
             "login": "Log in",
+            "back": "Back",
         },
         "theme": {
             "light_theme": "Light theme",
@@ -177,7 +181,7 @@ def show(lang: str, id: int):
         "paragraph/show.html",
         paragraph=paragraph,
         exists=exists,
-        locale=locale[lang],
+        locale=locale[lang]
     )
 
 
@@ -203,3 +207,14 @@ def edit(lang: str, id: int):
     return render_template(
         "paragraph/edit.html", paragraph=paragraph, ln=lang, locale=locale[lang]
     )
+
+
+@paragraph_bp.route("/account", methods=["GET"])
+def account():
+    if "username" in session:
+        username = session["username"]
+        email = session.get("email", "не указано")
+    else:
+        username = "Гость"
+        email = "не указано"
+    return render_template("account.html", username=username, email=email, locale=locale.get("ru"))
