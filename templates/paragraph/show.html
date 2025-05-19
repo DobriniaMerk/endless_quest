@@ -5,14 +5,8 @@
   <h1>{{ paragraph['id'] }} — {{ paragraph['title'] }}</h1>
   <form method="post" class="flex-right">
     <input name="id" type="number" min="0"  value="{{ paragraph['id'] }}" required>
-    <input type="submit" value="{{ locale['goto'] }}">
+    <input type="submit" value="{{ locale['show']['goto'] }}">
   </form>
-  {% if paragraph['protected'] == 0 %}
-    <a class="edit flex-right" href="{{ url_for('paragraph.edit', lang=paragraph['lang'], id=paragraph['id']) }}">{% if exists %} {{ locale['edit'] }} {% else %} {{ locale['add'] }} {% endif %}</a>
-  {% else %}
-    <a>{{ locale['edit'] }}</a>
-  {% endif %}
-  <a class="lang" href="{{ url_for('paragraph.show', lang=('en' if paragraph['lang'] == 'ru' else 'ru'), id=paragraph['id']) }}">{% if paragraph['lang'] == 'en' %} ru {% else %} en {% endif %}</a>
 {% endblock %}
 
 {% block content %}

@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %} {{ locale['page-title'] }} {% endblock %}</h1>
+    <h1>{% block title %} {{ locale['edit']['page-title'] }} {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
     <form class="edit" method="post">
-      <label for="title">{{ locale['title'] }}</label>
+      <label for="title">{{ locale['edit']['title'] }}</label>
         <input name="title" id="title" value="{{ paragraph['title'] }}" required>
-        <label for="story"> {{ locale['story'] }}</label>
+        <label for="story"> {{ locale['edit']['story'] }}</label>
         <textarea name="story" id="story" required>{{ paragraph['story'] }}</textarea>
         <div>
-            <input type="submit" value="{{ locale['save'] }}">
-            <a href="{{ url_for('paragraph.show', id=paragraph['id'], lang=ln) }}"> {{ locale['cancel'] }} </a>
+            <input type="submit" value="{{ locale['edit']['save'] }}">
+            <a href="{{ url_for('paragraph.show', id=paragraph['id'], lang=ln) }}"> {{ locale['edit']['cancel'] }} </a>
         </div>
     </form>
 
