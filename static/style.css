@@ -1,28 +1,16 @@
 @font-face {
-    font-family: externalFont;
-    src: url(font/static/EBGaramond-Regular.ttf);
+  font-family: computerFont;
+  src: url(font/ocrabeckerrus_lat.otf) format("opentype");
 }
 
-#bg {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: linear-gradient(rgba(220, 255, 255, 0.3), rgba(220, 255, 255, 0.3)), url('/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: -1;
+@font-face {
+  font-family: bookFont;
+  src: url(font/static/EBGaramond-Regular.ttf);
 }
 
-body {
-  opacity: 0.8;
-  font-family: externalFont
-}
-
-a {
-  color: #36250d;
-}
+/* a { */
+/*   color: #36250d; */
+/* } */
 
 .content {
   margin: auto;
@@ -48,25 +36,6 @@ a {
   }
 }
 
-
-nav {
-  max-width: 800px;
-  margin-inline: auto;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-nav h1 {
-  flex: 1;
-  font-size: 160%;
-}
-
-.flex-right {
-  margin-left: auto;
-}
-
 .edit {
   margin: 20px;
   display: flex;
@@ -85,15 +54,6 @@ nav h1 {
 textarea {
   height: 40vh;
 }
-
-.content :is(h1, h2, h3, h4, h5, h6) {
-  filter: brightness(165%);
-}
-
-
-
-
-
 
 
 /* Правая панель */
@@ -128,13 +88,74 @@ textarea {
   }
 }
 
-
-body.dark-theme {
-  background-color: #121212;
-  color: #f1f1f1;
+.main-header {
+  background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-body.light-theme {
+aside {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+body.book-theme #bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(rgba(179, 134, 0, 0.2), rgba(179, 134, 0, 0.2)), url('/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+body.book-theme {
+  opacity: 0.8;
+  font-family: bookFont;
+  font-size: 120%;
+}
+
+body.book-theme form * {
+  background-color: transparent;
+}
+
+body.clean-theme {
   background-color: #ffffff;
   color: #000000;
+
+  font-family: bookFont;
+  font-size: 120%;
+}
+
+body.computer-theme {
+  background-color: #000000;
+
+  font-family: computerFont;
+  color: #00ff00;
+  font-size: 100%;
+}
+
+body.computer-theme .nav-link {
+  color: #c0ff00 !important;
+}
+
+body.computer-theme .nav-link:hover  {
+  background-color: #333;
+}
+
+body.computer-theme a {
+  color: #c0ff00 !important;
+}
+
+body.computer-theme .dropdown-menu {
+  background-color: #333;
+}
+
+body.computer-theme input {
+  background-color: #333;
+  color: #c0ff90;
+}
+
+body.computer-theme textarea {
+  background-color: #222;
+  color: #6f6;
 }
