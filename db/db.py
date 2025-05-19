@@ -120,7 +120,15 @@ class DB:
         story_row = cursor.fetchone()
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
-
+    
+    def get_user_profile(self, user_id : int, lang : str = 'ru'):
+        connection = self._connect()
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT name, value FROM variables WHERE user_id = ?", (userd_id,))
+        row = cursor.fetchone()
+        connection.close()
+        return row if row else None
+    
     def edit_paragraph(
         self,
         paragraph_id: int,
