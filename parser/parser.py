@@ -1,9 +1,9 @@
 import lark
 from flask import current_app
-from db import get_db
 
-getvar_cb = None
-grammar = None
+GETVAR_CB = None
+GRAMMAR = None
+
 
 def process_page(text: str, variable_getter) -> str:
     """
@@ -11,8 +11,8 @@ def process_page(text: str, variable_getter) -> str:
     Args: Text to process, user id to get variables from
     Returns: HTML code of a processed page
     """
-    global getvar_cb
-    getvar_cb = variable_getter
+    global GETVAR_CB
+    GETVAR_CB = variable_getter
     processed = ""
     root = parse(text)
     for node in root.children:
@@ -20,18 +20,20 @@ def process_page(text: str, variable_getter) -> str:
 
     return processed
 
+
 def load_grammar() -> str:
     """
     Loads grammar file and returns it's contents
     """
-    global grammar
-    if grammar is not None:
-        return grammar
+    global GRAMMAR
+    if GRAMMAR is not None:
+        return GRAMMAR
 
-    grammar_path = current_app.config['GRAMMAR_PATH']
-    with open(grammar_path) as f:
-        grammar = f.read()
-    return grammar
+    grammar_path = current_app.config["GRAMMAR_PATH"]
+    with open(grammar_path, encoding="utf-8") as f:
+        GRAMMAR = f.read()
+    return GRAMMAR
+
 
 def parse(text: str) -> lark.tree.Tree:
     """
@@ -41,6 +43,7 @@ def parse(text: str) -> lark.tree.Tree:
     """
     parser = lark.Lark(load_grammar())
     return parser.parse(text)
+
 
 def process(node: lark.tree.Tree) -> str:
     """
@@ -56,6 +59,7 @@ def process(node: lark.tree.Tree) -> str:
         case "link":
             return parse_link(node)
     raise UnknownNode(node.data)
+
 
 def eval_if(node: lark.tree.Tree) -> str:
     """
@@ -75,7 +79,7 @@ def eval_if(node: lark.tree.Tree) -> str:
             for n in nd.children[1:]:
                 ret += process(n)
             return ret
-        elif nd.data == "else":
+        if nd.data == "else":
             for n in nd.children:
                 ret += process(n)
             return ret
@@ -112,6 +116,7 @@ def eval_expr(node: lark.tree.Tree) -> int:
                 raise VariableNotSetError(varname) from e
     raise UnknownNode(node.data)
 
+
 def eval_subst(node: lark.tree.Tree) -> str:
     """
     Does expression substitution, evauating expr inside
@@ -124,22 +129,26 @@ def eval_subst(node: lark.tree.Tree) -> str:
             return str(node.children[1])
         return ""  # maybe raise so eval_expr could insert some error code?
 
+
 def parse_link(node: lark.tree.Tree) -> str:
     """Turns parse tree node to link html code"""
     text = process(node.children[0])
     link = str(node.children[1])
     if len(node.children) > 2:
-        vars = []
+        variables = []
         for nd in node.children[2].children:
             match nd.data:
                 case "flag":
-                    vars.append(str(nd.children[0]) + "=true")
+                    variables.append(str(nd.children[0]) + "=true")
                 case "unflag":
-                    vars.append(str(nd.children[0]) + "=")
+                    variables.append(str(nd.children[0]) + "=")
                 case "set":
-                    vars.append(str(nd.children[0]) + "=" + str(eval_expr(nd.children[1])))
-        link += "?" + "&".join(vars)
+                    variables.append(
+                        str(nd.children[0]) + "=" + str(eval_expr(nd.children[1]))
+                    )
+        link += "?" + "&".join(variables)
     return f'<a href="{link}">{text}</a>'
+
 
 def comp_eval(node: lark.tree.Tree) -> bool:
     """
@@ -171,7 +180,7 @@ def comp_eval(node: lark.tree.Tree) -> bool:
                 case "<=":
                     return lhs <= rhs
                 case ">=":
-                    return lhs >= lhs
+                    return lhs >= rhs
                 case "=":
                     return lhs == rhs
             raise UnknownComparator(comp)
@@ -181,6 +190,7 @@ def comp_eval(node: lark.tree.Tree) -> bool:
             return comp_eval(node.children[0]) and comp_eval(node.children[1])
     raise UnknownNode(node.data)
 
+
 def getvar(name: str) -> str:
     """
     Gets variable value from database. If value is not present — throws.
@@ -188,27 +198,33 @@ def getvar(name: str) -> str:
     Returns: Requested variable value
     Throws: KeyError if asked variable is not set
     """
-    return getvar_cb(name)
+    return GETVAR_CB(name)
+
 
 class UnknownComparator(Exception):
     """
     Raised when comparator in comp expression is unknown.
     Does not expected to be raised under normal circumstances
     """
+
     def __init__(self, msg=""):
         self.message = msg
+
 
 class UnknownNode(Exception):
     """
     Raised when node name is not matched.
     Does not expected to be raised under normal circumstances
     """
+
     def __init__(self, msg):
         self.message = msg
+
 
 class VariableNotSetError(Exception):
     """
     Raised when there is an unset variable in eval_expr
     """
+
     def __init__(self, msg):
         self.message = msg

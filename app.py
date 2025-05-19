@@ -1,8 +1,15 @@
 import os
+from typing import Optional
 from flask import Flask
 from frontend import register_blueprints
 
-def create_app(test_config=None):
+def create_app(test_config: Optional[dict]=None):
+    """
+    Creates flask app
+
+    Args:
+        test_config (Optional[dict]): App config for tests.
+    """
     app = Flask(__name__)
 
     if test_config is not None:
@@ -21,15 +28,6 @@ def create_app(test_config=None):
     @app.route("/lorem")
     def test():
         return "Lorem ipsum dolor sit amet"
-
-    # @app.before_request
-    # def save_last_page():
-    #   if 'user_id' in session:
-    #       page = request.path + ( '?' + request.query_string.decode() if request.query_string else '' )
-    #       db = get_db()
-    #       db.execute('REPLACE INTO user_sessions(user_id,last_page) VALUES(?,?)',
-    #                   (session['user_id'], page))
-    #       db.commit()
 
     register_blueprints(app)
 

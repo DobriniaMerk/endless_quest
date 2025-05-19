@@ -52,7 +52,8 @@ def login():
     POST: Authenticates the user and starts a session.
 
     Returns:
-        Union[str, Response]: Renders the login form or redirects to the start page if login is successful.
+        Union[str, Response]: Renders the login form
+            or redirects to the start page if login is successful.
     """
     if "username" in session:
         return redirect(url_for("paragraph.show", id=0, lang=langs[0]))

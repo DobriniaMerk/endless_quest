@@ -1,11 +1,11 @@
 from flask import Flask
 
-from frontend import profile
-from .auth import *
-from .paragraph import *
-from .moderation import *
-from .guest import *
-from .profile import *
+from .auth import auth_bp
+from .paragraph import paragraph_bp
+from .moderation import moderation_bp
+from .guest import guest_bp
+from .profile import profile_bp
+
 
 def register_blueprints(app: Flask) -> None:
     """

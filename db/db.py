@@ -14,7 +14,8 @@ class DB:
 
         Args:
             db_path (str): Path to the SQLite database file.
-            schema_path (Optional[str]): Path to the SQL schema file. If None, assumes 'schema.sql' in the same directory.
+            schema_path (Optional[str]): Path to the SQL schema file.
+                If None, assumes 'schema.sql' in the same directory.
         """
         self.db_path = db_path
         if schema_path:
@@ -88,7 +89,7 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)"  # DO NOT PLACE A COMMA HERE, THIS IS INTENDED
+            "INSERT INTO variables (name, user_id, visible, value) VALUES (?, ?, ?, ?)"
             "ON CONFLICT (name, user_id) DO UPDATE SET value = excluded.value",
             (name, user_id, visible, value),
         )
@@ -104,7 +105,7 @@ class DB:
         Args:
             paragraph_id (int): The ID of the paragraph.
             lang (str, optional): The language ('ru' or 'en'). Defaults to 'ru'.
-            back_history (int, optional): How much edits back to get paragraph. 0 is current version.
+            back_history (int, optional): How much edits back to get paragraph.
 
         Returns:
             Optional[Tuple[str, str]]: The paragraph text and title, or None if not found.
@@ -120,17 +121,17 @@ class DB:
         if not row or not row[column]:
             connection.close()
             return None
-        id = row[column]
+        ind = row[column]
         story_row = None
         for _ in range(back_history + 1):
             cursor.execute(
                 "SELECT story, title, previous FROM edits WHERE id = ?",
-                (id,),
+                (ind,),
             )
             story_row = cursor.fetchone()
             if story_row is None:
                 break
-            id = story_row["previous"]
+            ind = story_row["previous"]
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
 
@@ -147,7 +148,7 @@ class DB:
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(
-            f"SELECT name, value FROM variables WHERE user_id = ?",
+            "SELECT name, value FROM variables WHERE user_id = ?",
             (user_id,),
         )
         row = cursor.fetchall()
@@ -208,7 +209,8 @@ class DB:
         self, paragraph_id: int, lang: str, back_history: int
     ) -> None:
         """
-        Revert paragraph to what it was back_history edits ago. Does nothing is history contains less edits.
+        Revert paragraph to what it was back_history edits ago.
+        Does nothing if history contains less edits.
 
         Args:
             paragraph_id (int): The ID of the paragraph.
@@ -314,7 +316,7 @@ class DB:
         return row["id"] if row else None
 
 
-_db = None
+_DB = None
 
 
 def get_db() -> DB:
@@ -324,18 +326,18 @@ def get_db() -> DB:
     Returns:
         DB: The global DB instance.
     """
-    global _db
-    if _db is None:
-        _db = DB(
+    global _DB
+    if _DB is None:
+        _DB = DB(
             current_app.config["DATABASE_PATH"],
             current_app.config["SCHEMA_PATH"],
         )
-    return _db
+    return _DB
 
 
 def clear_db() -> None:
     """
     Clear the global database instance, forcing reinitialization on next access.
     """
-    global _db
-    _db = None
+    global _DB
+    _DB = None
