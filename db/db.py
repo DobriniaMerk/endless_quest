@@ -96,7 +96,7 @@ class DB:
         connection.close()
 
     def get_paragraph(
-        self, paragraph_id: int, lang: str = "ru"
+        self, paragraph_id: int, lang: str = "ru", back_history: int = 0
     ) -> Optional[Tuple[str, str]]:
         """
         Retrieve the text of a paragraph in the specified language.
@@ -104,6 +104,7 @@ class DB:
         Args:
             paragraph_id (int): The ID of the paragraph.
             lang (str, optional): The language ('ru' or 'en'). Defaults to 'ru'.
+            back_history (int, optional): How much edits back to get paragraph. 0 is current version.
 
         Returns:
             Optional[Tuple[str, str]]: The paragraph text and title, or None if not found.
@@ -116,10 +117,15 @@ class DB:
         if not row or not row[column]:
             connection.close()
             return None
-        cursor.execute("SELECT story, title FROM edits WHERE id = ?", (row[column],))
-        story_row = cursor.fetchone()
+        id = row[column]
+        story_row = None
+        for _ in range(back_history + 1):
+            cursor.execute("SELECT story, title, previous FROM edits WHERE id = ?", (id,))
+            story_row = cursor.fetchone()
+            id = story_row["previous"]
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
+
 
     def edit_paragraph(
         self,
@@ -170,6 +176,21 @@ class DB:
         connection.commit()
         connection.close()
         return new_edit_id
+
+    def revert_paragraoh(self, paragraph_id: int, lang: str, back_history: int) -> None:
+        """
+        Revert paragraph to what it was back_history edits ago. Does nothing is history contains less edits.
+
+        Args:
+            paragraph_id (int): The ID of the paragraph.
+            lang (str): The language ('ru' or 'en').
+            back_history (int): How much edits to revert.
+        """
+        contents = self.get_paragraph(paragraph_id, lang, back_history)
+        if contents is None:
+            return
+        self.edit_paragraph(paragraph_id, contents[0], contents[1], False, lang)
+
 
     def add_user(
         self, username: str, email: str, password: str, is_moderator: bool = False
