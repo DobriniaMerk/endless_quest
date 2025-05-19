@@ -128,13 +128,22 @@ class DB:
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
 
-    def get_user_profile(self, user_id : int, lang : str = 'ru'):
+    def get_user_profile(self, user_id : int) -> list[sqlite3.Row]:
+        """
+        Get all variables for a given user by his id
+
+        Args:
+            user_id (int): User ID
+
+        Returns:
+            list[sqlite3.Row]: List of set variables. Names are at ["name"], values are at ["value"]
+        """
         connection = self._connect()
         cursor = connection.cursor()
         cursor.execute(f"SELECT name, value FROM variables WHERE user_id = ?", (user_id,))
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         connection.close()
-        return row if row else None
+        return row if row else []
 
     def edit_paragraph(
         self,

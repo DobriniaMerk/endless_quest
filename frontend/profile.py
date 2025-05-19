@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, render_template, session
 from db import get_db
 
 from .locale_data import locale
@@ -10,8 +10,9 @@ langs = ["ru", "en"]
 @profile_bp.route("<lang>/<int:id>/profile", methods=["GET"])
 def show(id : int, lang : str):
     db = get_db()
-    raw = db.get_user_profile(id, lang)
+    raw = db.get_user_profile(db.userid_by_name(session["username"]))
     exists = bool(raw)
+    print(raw)
     return render_template(
             'profile.html',
             variables=raw,
