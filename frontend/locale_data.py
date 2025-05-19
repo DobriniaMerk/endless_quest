@@ -37,6 +37,9 @@ locale = {
             "light_theme": "Светлая тема",
             "dark_theme": "Темная тема",
             "my_theme": "Моя тема",
+            "clean": "Пустое",
+            "book": "Книга",
+            "computer": "Компьютерный терминал",
         },
         "profile": {
             "name": "User inventory",
@@ -79,6 +82,9 @@ locale = {
             "light_theme": "Light theme",
             "dark_theme": "Dark theme",
             "my_theme": "My theme",
+            "clean": "Clean",
+            "book": "Book",
+            "computer": "Computer terminal",
         },
         "profile": {
             "name": "Инвентарь пользователя",

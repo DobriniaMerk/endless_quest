@@ -15,6 +15,7 @@
 </head>
 
 <body>
+  <div id="bg"></div>
   <div class="d-flex">
     <!-- Основной контент -->
     <div class="flex-grow-1">
@@ -56,9 +57,9 @@
               {{ locale['menu']['choose_design'] }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="themeDropdown">
-              <li><a class="dropdown-item" href="#" onclick="setTheme('light')">{{ locale['theme']['light_theme'] }}</a></li>
-              <li><a class="dropdown-item" href="#" onclick="setTheme('dark')">{{ locale['theme']['dark_theme'] }}</a></li>
-              <li><a class="dropdown-item" href="#" onclick="setTheme('my')">{{ locale['theme']['my_theme'] }}</a></li>
+              <li><a class="dropdown-item" href="#" onclick="setTheme('clean')">{{ locale['theme']['clean'] }}</a></li>
+              <li><a class="dropdown-item" href="#" onclick="setTheme('book')">{{ locale['theme']['book'] }}</a></li>
+              <li><a class="dropdown-item" href="#" onclick="setTheme('computer')">{{ locale['theme']['computer'] }}</a></li>
             </ul>
           </li>
 
@@ -136,14 +137,14 @@
   const body = document.body;
 
   function applyTheme(theme) {
-    body.classList.remove('light-theme', 'dark-theme');
+    body.classList.remove('clean-theme', 'book-theme', 'computer-theme');
 
-    if (theme === 'dark') {
-      body.classList.add('dark-theme');
-    } else if (theme === 'light') {
-      body.classList.add('light-theme');
-    } else {
-      //TODO
+    if (theme === 'clean') {
+      body.classList.add('clean-theme');
+    } else if (theme === 'book') {
+      body.classList.add('book-theme');
+    } else if (theme === 'computer') {
+      body.classList.add('computer-theme');
     }
   }
 
