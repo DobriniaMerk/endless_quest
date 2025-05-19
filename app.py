@@ -1,9 +1,6 @@
 import os
-from flask import Flask, request, session
-from frontend import auth_bp, bp
-from frontend.guest import guest_bp
-
-from frontend.paragraph import locale as paragraph_locale, langs
+from flask import Flask
+from frontend import register_blueprints
 
 def create_app(test_config=None):
     app = Flask(__name__)
