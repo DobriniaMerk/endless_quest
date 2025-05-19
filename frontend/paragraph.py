@@ -34,6 +34,19 @@ locale = {
             "save": "Опубликовать",
             "cancel": "Выбросить черновик",
         },
+        "menu": {
+            "account": "Аккаунт",
+            "inventory": "Инвентарь",
+            "main_menu": "Меню",
+            "choose_design": "Выбрать оформление",
+            "logout": "Выйти",
+            "logout": "Войти",
+        },
+        "theme": {
+            "light_theme": "Светлая тема",
+            "dark_theme": "Темная тема",
+            "my_theme": "Моя тема",
+        },
     },
     "en": {
         "show": {
@@ -56,6 +69,19 @@ locale = {
             "story": "Story",
             "save": "Publish",
             "cancel": "Better not",
+        },
+        "menu": {
+            "account": "Account",
+            "inventory": "Inventory",
+            "main_menu": "Menu",
+            "choose_design": "Choose a design",
+            "logout": "Log out",
+            "login": "Log in",
+        },
+        "theme": {
+            "light_theme": "Light theme",
+            "dark_theme": "Dark theme",
+            "my_theme": "My theme",
         },
     },
 }
@@ -151,7 +177,7 @@ def show(lang: str, id: int):
         "paragraph/show.html",
         paragraph=paragraph,
         exists=exists,
-        locale=locale[lang]["show"],
+        locale=locale[lang],
     )
 
 
@@ -175,5 +201,5 @@ def edit(lang: str, id: int):
         story = raw[0]
     paragraph = {"id": id, "title": title, "story": story}
     return render_template(
-        "paragraph/edit.html", paragraph=paragraph, ln=lang, locale=locale[lang]["edit"]
+        "paragraph/edit.html", paragraph=paragraph, ln=lang, locale=locale[lang]
     )

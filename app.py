@@ -1,6 +1,9 @@
 import os
-from flask import Flask, session
-from frontend import register_blueprints
+from flask import Flask, request, session
+from frontend import auth_bp, bp
+from frontend.guest import guest_bp
+
+from frontend.paragraph import locale as paragraph_locale, langs
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -16,6 +19,7 @@ def create_app(test_config=None):
         )
 
     os.makedirs(app.instance_path, exist_ok=True)
+
 
     @app.route("/lorem")
     def test():
