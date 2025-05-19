@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, url_for
 from db import get_db
 
-profile_bp = Blueprint("paragraph", __name__, url_prefix="/")
+profile_bp = Blueprint("profile", __name__, url_prefix="/")
 
 langs = ["ru", "en"]
 
