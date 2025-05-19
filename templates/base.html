@@ -35,7 +35,13 @@
         <h5 class="mb-3">{{ locale['menu']['main_menu'] }}</h5>
         <ul class="nav flex-column">
           <li class="nav-item"><a class="nav-link" href="{{ url_for('paragraph.account') }}">{{ locale['menu']['account'] }}</a></li>
-          <li class="nav-item"><a class="nav-link" href="/profile"> {{ locale['menu']['inventory'] }}</a></li>
+          {% if paragraph is defined %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('profile.show', id=paragraph.id, lang=paragraph.lang) }}">
+                {{ locale['menu']['inventory'] }}
+              </a>
+            </li>
+          {% endif %}
           
           <li class="nav-item">
             {% if paragraph %}

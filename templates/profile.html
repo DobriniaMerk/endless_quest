@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{{ locale['profile']['name'] }}</h1>
+
+{% if variables %}
+  <div class="list-group">
+    {% for name, value in variables %}
+      <div class="list-group-item mb-3 border rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <strong class="text-capitalize">{{ name }}</strong>
+        </div>
+        <div class="mt-2">
+          <span class="text-muted">{{ value }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">{{ locale['profile']['no_data'] }}</p>
+{% endif %}
+{% endblock %}
