@@ -1,0 +1,11 @@
+<h1>Модерация правок</h1>
+<ul>
+  {% for version in versions %}
+  <li>
+    <h2>{{ version[1] }} {% if not can_revert %} <form action="{{ url_for('moderation.history', lang=lang, id=id, _method='POST', revision=version[2]) }}" method="POST"> <button type="submit">Вернуться к этой версии</button> </form> {% endif %}</h2>
+    <div>
+      {{ version[0] }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>

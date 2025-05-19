@@ -1,7 +1,6 @@
 import os
 from flask import Flask, session
-from frontend import auth_bp, bp
-from frontend.guest import guest_bp
+from frontend import register_blueprints
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -22,16 +21,15 @@ def create_app(test_config=None):
     def test():
         return "Lorem ipsum dolor sit amet"
 
-    @app.before_request
-    def save_last_page():
-      if 'user_id' in session:
-          page = request.path + ( '?' + request.query_string.decode() if request.query_string else '' )
-          db = get_db()
-          db.execute('REPLACE INTO user_sessions(user_id,last_page) VALUES(?,?)',
-                      (session['user_id'], page))
-          db.commit()
+    # @app.before_request
+    # def save_last_page():
+    #   if 'user_id' in session:
+    #       page = request.path + ( '?' + request.query_string.decode() if request.query_string else '' )
+    #       db = get_db()
+    #       db.execute('REPLACE INTO user_sessions(user_id,last_page) VALUES(?,?)',
+    #                   (session['user_id'], page))
+    #       db.commit()
 
-    app.register_blueprint(bp)
-    app.register_blueprint(auth_bp)
+    register_blueprints(app)
 
     return app

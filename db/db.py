@@ -122,6 +122,8 @@ class DB:
         for _ in range(back_history + 1):
             cursor.execute("SELECT story, title, previous FROM edits WHERE id = ?", (id,))
             story_row = cursor.fetchone()
+            if story_row is None:
+                break
             id = story_row["previous"]
         connection.close()
         return (story_row["story"], story_row["title"]) if story_row else None
@@ -177,7 +179,8 @@ class DB:
         connection.close()
         return new_edit_id
 
-    def revert_paragraoh(self, paragraph_id: int, lang: str, back_history: int) -> None:
+
+    def revert_paragraph(self, paragraph_id: int, lang: str, back_history: int) -> None:
         """
         Revert paragraph to what it was back_history edits ago. Does nothing is history contains less edits.
 
@@ -241,6 +244,25 @@ class DB:
         if row and check_password_hash(row["password_hash"], password):
             return (row["id"], bool(row["is_moderator"]))
         return None
+
+    def is_moderator(self, username: str) -> Optional[bool]:
+        """
+        Check if user has rights for moderation
+
+        Args:
+            username (str): The username.
+
+        Returns Optional[bool]: True if user is a moderator. None if user is not found.
+        """
+        connection = self._connect()
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT is_moderator FROM users WHERE username = ?",
+            (username,)
+        )
+        row = cursor.fetchone()
+        connection.close()
+        return bool(row["is_moderator"]) if row is not None else None
 
     def userid_by_name(self, username: str) -> Optional[int]:
         """
