@@ -24,22 +24,30 @@ a {
   color: #36250d;
 }
 
-.user-info {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-  z-index: 1000;
-}
-
-
 .content {
   margin: auto;
   max-width: 600px;
 }
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
+
+  .some-element {
+    flex-direction: column;
+  }
+
+  nav {
+    display: block;
+  }
+}
+
 
 nav {
   max-width: 800px;
@@ -80,4 +88,53 @@ textarea {
 
 .content :is(h1, h2, h3, h4, h5, h6) {
   filter: brightness(165%);
+}
+
+
+
+
+
+
+
+/* Правая панель */
+.sidebar-static {
+  width: 250px;
+  background-color: #f8f9fa;
+  border-left: 1px solid #ddd;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-static .nav-link {
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.sidebar-static .nav-link:hover {
+  background-color: #e3f2fd;
+}
+
+/* Контейнеры */
+.main-header {
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .sidebar-static {
+    display: none;
+  }
+}
+
+
+body.dark-theme {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+body.light-theme {
+  background-color: #ffffff;
+  color: #000000;
 }

@@ -1,28 +1,115 @@
 <!DOCTYPE html>
-<title>{% block title %}{% endblock %}</title>
+<html lang="ru">
 <head>
-  <link rel=stylesheet href="{{ url_for('static', filename='style.css') }}">
-  <link rel="preload" href="/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg" as="image">
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pVU6xJGvL4Nz5Ux4jRBk8T9Y5yI71EwZpNE7vY8zSFLztJ9+WZqXl8xqE7dNpFPbNzDmdaMczw+M0Yk0T5d2cw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-  <div id="bg"></div>
-  <div class="nav">
-    <nav>
-      {% block header %}{% endblock %}
-      <div class="user-info">
-        {% if session['username'] %}
-        <div>Вы вошли как: <strong>{{ session['username'] }}</strong></div>
-        <a class="logout-button" href="{{ url_for('auth.logout') }}">Выйти</a>
-        {% else %}
-        <div>Вы не вошли</div>
-        <a class="logout-button" href="{{ url_for('auth.login') }}">Войти</a>
-        {% endif %}
+  <div class="d-flex">
+    <!-- Основной контент -->
+    <div class="flex-grow-1">
+      <header class="main-header py-3 shadow-sm bg-light">
+        <div class="container d-flex justify-content-between align-items-center">
+          <div>{% block header %}{% endblock %}</div>
+        </div>
+      </header>
+
+      <main class="container mt-4">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <!-- Правая панель -->
+    <aside class="sidebar-static d-none d-md-block">
+      <div class="p-3">
+        <h5 class="mb-3">{{ locale['menu']['main_menu'] }}</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link" href="/"> {{ locale['menu']['account'] }}</a></li>
+          <li class="nav-item"><a class="nav-link" href="/profile"> {{ locale['menu']['inventory'] }}</a></li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ locale['menu']['choose_design'] }}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="themeDropdown">
+              <li><a class="dropdown-item" href="#" onclick="setTheme('light')">{{ locale['theme']['light_theme'] }}</a></li>
+              <li><a class="dropdown-item" href="#" onclick="setTheme('dark')">{{ locale['theme']['dark_theme'] }}</a></li>
+              <li><a class="dropdown-item" href="#" onclick="setTheme('my')">{{ locale['theme']['my_theme'] }}</a></li>
+            </ul>
+          </li>
+
+
+          {% if paragraph %}
+            <hr>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('paragraph.show', lang=('en' if paragraph.lang == 'ru' else 'ru'), id=paragraph.id) }}">
+                  {{ 'EN' if paragraph.lang == 'ru' else 'RU' }}
+                </a>
+              </li>
+
+            {% if not paragraph.protected %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('paragraph.edit', lang=paragraph.lang, id=paragraph.id) }}">
+                  {% if exists %} {{ locale['show']['edit'] }} {% else %}  {{ locale['show']['add'] }} {% endif %}
+                </a>
+              </li>
+            {% else %}
+              <li class="nav-item disabled">
+                <span class="nav-link text-muted"> {{ locale['show']['edit'] }}</span>
+              </li>
+            {% endif %}
+          {% endif %}
+
+        
+          {% if session.get('username') %}
+            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"> {{ locale['menu']['logout'] }}</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"> {{ locale['menu']['login'] }}</a></li>
+          {% endif %}
+        </ul>
       </div>
-    </nav>
+    </aside>
   </div>
 
-  <section class="content">
-    {% block content %}{% endblock %}
-  </section>
+  <!--  для работы выпадающего меню -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+</html>
+
+
+
+<script>
+  const body = document.body;
+
+  function applyTheme(theme) {
+    body.classList.remove('light-theme', 'dark-theme');
+
+    if (theme === 'dark') {
+      body.classList.add('dark-theme');
+    } else if (theme === 'light') {
+      body.classList.add('light-theme');
+    } else {
+      //TODO
+    }
+  }
+
+  function setTheme(theme) {
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+  }
+
+  // Применяем сохранённую тему при загрузке
+  const savedTheme = localStorage.getItem('theme') || 'system';
+  applyTheme(savedTheme);
+</script>
