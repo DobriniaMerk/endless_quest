@@ -1,3 +1,28 @@
+@font-face {
+    font-family: externalFont;
+    src: url(font/static/EBGaramond-Regular.ttf);
+}
+
+#bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(rgba(220, 255, 255, 0.3), rgba(220, 255, 255, 0.3)), url('/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+body {
+  opacity: 0.8;
+  font-family: externalFont
+}
+
+a {
+  color: #36250d;
+}
 
 .user-info {
   position: fixed;

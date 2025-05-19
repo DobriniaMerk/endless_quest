@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <title>{% block title %}{% endblock %}</title>
-<link rel=stylesheet href="{{ url_for('static', filename='style.css') }}">
+<head>
+  <link rel=stylesheet href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preload" href="/static/plufow-le-studio-KLpyOKB1lt4-unsplash.jpg" as="image">
+</head>
 
-
-<div class="nav">
-  <nav>
+<body>
+  <div id="bg"></div>
+  <div class="nav">
+    <nav>
       {% block header %}{% endblock %}
       <div class="user-info">
         {% if session['username'] %}
-            <div>Вы вошли как: <strong>{{ session['username'] }}</strong></div>
-            <a class="logout-button" href="{{ url_for('auth.logout') }}">Выйти</a>
+        <div>Вы вошли как: <strong>{{ session['username'] }}</strong></div>
+        <a class="logout-button" href="{{ url_for('auth.logout') }}">Выйти</a>
         {% else %}
-            <div>Вы не вошли</div>
-            <a class="logout-button" href="{{ url_for('auth.login') }}">Войти</a>
+        <div>Вы не вошли</div>
+        <a class="logout-button" href="{{ url_for('auth.login') }}">Войти</a>
         {% endif %}
-    </div>
-  </nav>
-</div>
+      </div>
+    </nav>
+  </div>
 
-<section class="content">
-  {% block content %}{% endblock %}
-</section>
+  <section class="content">
+    {% block content %}{% endblock %}
+  </section>
+</body>
