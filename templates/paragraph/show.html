@@ -3,10 +3,6 @@
 
 {% block header %}
   <h1>{{ paragraph['id'] }} — {{ paragraph['title'] }}</h1>
-  <form method="post" class="flex-right">
-    <input name="id" type="number" min="0"  value="{{ paragraph['id'] }}" required>
-    <input type="submit" value="{{ locale['show']['goto'] }}">
-  </form>
 {% endblock %}
 
 {% block content %}
