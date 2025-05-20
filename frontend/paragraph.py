@@ -152,7 +152,7 @@ def edit(lang: str, ind: int):
         Response: Rendered HTML template or redirect response.
     """
     if lang not in langs:
-        return redirect(url_for("paragraph.show", id=ind, lang=langs[0]))
+        return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
     db = get_db()
     if request.method == "POST":
         title = request.form["title"]

@@ -69,5 +69,5 @@ def history(lang: str, ind: int):
     try:
         db.revert_paragraph(ind, lang, int(request.args["revision"]))
     except KeyError:
-        return redirect(url_for("moderation.history", lang=lang, id=ind))
-    return redirect(url_for("moderation.history", lang=lang, id=ind))
+        return redirect(url_for("moderation.history", lang=lang, ind=ind))
+    return redirect(url_for("moderation.history", lang=lang, ind=ind))

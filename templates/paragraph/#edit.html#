@@ -11,7 +11,7 @@
         <textarea name="story" id="story" required>{{ paragraph['story'] }}</textarea>
         <div>
             <input type="submit" value="{{ locale['save'] }}">
-            <a href="{{ url_for('paragraph.show', id=paragraph['id'], lang=ln) }}"> {{ locale['cancel'] }} </a>
+            <a href="{{ url_for('paragraph.show', ind=paragraph['id'], lang=ln) }}"> {{ locale['cancel'] }} </a>
         </div>
     </form>
 

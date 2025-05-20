@@ -39,7 +39,7 @@ def register():
 
         db.add_user(username, email, password)
         session["username"] = username
-        return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+        return redirect(url_for("paragraph.show", ind=0, lang=langs[0]))
     return render_template("register.html")
 
 
@@ -56,7 +56,7 @@ def login():
             or redirects to the start page if login is successful.
     """
     if "username" in session:
-        return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+        return redirect(url_for("paragraph.show", ind=0, lang=langs[0]))
     if request.method == "POST":
         db = get_db()
         user = db.find_user(request.form["username"], request.form["password"])
@@ -65,7 +65,7 @@ def login():
             session["username"] = request.form["username"]
             session["user_id"] = user_id
             session["is_moderator"] = is_moderator
-            return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+            return redirect(url_for("paragraph.show", ind=0, lang=langs[0]))
         flash("Неправильное имя пользователя или пароль")
     return render_template("login.html")
 
