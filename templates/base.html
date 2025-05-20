@@ -38,7 +38,7 @@
           <li class="nav-item"><a class="nav-link" href="{{ url_for('paragraph.account') }}">{{ locale['menu']['account'] }}</a></li>
           {% if paragraph is defined %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('profile.show', id=paragraph.id, lang=paragraph.lang) }}">
+              <a class="nav-link" href="{{ url_for('profile.show', ind=paragraph.id, lang=paragraph.lang) }}">
                 {{ locale['menu']['inventory'] }}
               </a>
             </li>
@@ -46,7 +46,7 @@
           
           <li class="nav-item">
             {% if paragraph %}
-            <a class="nav-link" href="{{ url_for('moderation.history', lang=paragraph.lang, id=paragraph.id) }}">
+            <a class="nav-link" href="{{ url_for('moderation.history', lang=paragraph.lang, ind=paragraph.id) }}">
               {{ locale['menu']['history'] }}
             </a>
             {% endif %}
@@ -96,7 +96,7 @@
 
             {% if not paragraph.protected %}
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('paragraph.edit', lang=paragraph.lang, id=paragraph.id) }}">
+                <a class="nav-link" href="{{ url_for('paragraph.edit', lang=paragraph.lang, ind=paragraph.id) }}">
                   {% if exists %} {{ locale['show']['edit'] }} {% else %}  {{ locale['show']['add'] }} {% endif %}
                 </a>
               </li>

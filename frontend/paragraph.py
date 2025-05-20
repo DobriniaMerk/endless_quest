@@ -79,7 +79,7 @@ def index():
     Returns:
         Response: A redirect response to the paragraph display route.
     """
-    return redirect(url_for("paragraph.show", id=0, lang=langs[0]))
+    return redirect(url_for("paragraph.show", ind=0, lang=langs[0]))
 
 
 @paragraph_bp.route("<lang>/<int:ind>", methods=["GET"])
@@ -102,7 +102,7 @@ def show(lang: str, ind: int):
             return resp
 
     if lang not in langs:
-        return redirect(url_for("paragraph.show", id=ind, lang=langs[0]))
+        return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
     db = get_db()
 
     raw = db.get_paragraph(ind, lang)
@@ -158,9 +158,9 @@ def edit(lang: str, ind: int):
         title = request.form["title"]
         story = request.form["story"]
         if not title:
-            return redirect(url_for("paragraph.show", id=4096, lang=lang))
+            return redirect(url_for("paragraph.show", ind=4096, lang=lang))
         db.edit_paragraph(ind, story, title, protected=False, lang=lang)
-        return redirect(url_for("paragraph.show", id=ind, lang=lang))
+        return redirect(url_for("paragraph.show", ind=ind, lang=lang))
     raw = db.get_paragraph(ind, lang)
     title = ""
     story = ""
