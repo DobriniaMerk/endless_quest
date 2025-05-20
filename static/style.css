@@ -96,6 +96,10 @@ aside {
   background-color: rgba(0, 0, 0, 0) !important;
 }
 
+.linebreak {
+  white-space: pre-wrap;
+}
+
 body.book-theme #bg {
   position: fixed;
   top: 0; left: 0;
