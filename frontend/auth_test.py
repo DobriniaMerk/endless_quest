@@ -31,13 +31,18 @@ class AuthTestCase(unittest.TestCase):
         os.unlink(self.db_path)
 
     def test_register(self):
-        response = self.client.post(
+        self.client.post(
             "/register",
             data={
                 "username": "newuser",
                 "email": "new@example.com",
                 "password": "pass123",
             },
+            follow_redirects=True,
+        )
+
+        response = self.client.get(
+            "/account",
             follow_redirects=True,
         )
 
@@ -57,9 +62,14 @@ class AuthTestCase(unittest.TestCase):
         self.assertIn("Имя пользователя уже существует", response.data.decode("utf-8"))
 
     def test_login_success(self):
-        response = self.client.post(
+        self.client.post(
             "/login",
             data={"username": "testuser", "password": "12345"},
+            follow_redirects=True,
+        )
+
+        response = self.client.get(
+            "/account",
             follow_redirects=True,
         )
 

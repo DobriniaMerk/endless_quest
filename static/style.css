@@ -122,6 +122,10 @@ body.book-theme form * {
   background-color: transparent;
 }
 
+body.book-theme a {
+  color: #734d26;
+}
+
 body.clean-theme {
   background-color: #ffffff;
   color: #000000;
