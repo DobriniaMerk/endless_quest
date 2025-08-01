@@ -7,8 +7,7 @@ start: something+
 ?something: special
           | text
 
-subst: "[" expr "]"
-     | "[" expr "|" NUMBER "]"
+subst: "(%" expr "%)"
 
 expr: sum
 
@@ -24,9 +23,9 @@ expr: sum
     | "(" sum ")"
 
 
-if: "::" conditional "::" then elif* else? "&&"
-elif: "%" conditional "%" something*
-else: "%%" something*
+if: "(?" conditional "?)" then elif* else? "(;;)"
+elif: "(!" conditional "!)" something*
+else: "(!!)" something*
 then: something*
 
 ?conditional: cond_or
@@ -43,8 +42,8 @@ then: something*
 !?comp:"<" | ">" | "=" | "<=" | ">="
 
 
-link: "{" something* "|" NUMBER "}" varblock?
-varblock: "{" (varset ",")* varset "}"
+link: "((" something* ";" NUMBER "))" varblock?
+varblock: "((" (varset ",")* varset "))"
 ?varset: "+" VARNAME -> flag
          | "-" VARNAME -> unflag
          | VARNAME "=" expr -> set
@@ -52,7 +51,7 @@ varblock: "{" (varset ",")* varset "}"
 
 VARNAME: (LETTER|"_") (LETTER|DIGIT|"_")*
 LETTER: "a".."z" | "A".."Z" | "а".."я" | "А".."Я"
-text: /(?:(?!&&)(?!::)[^%|[{])+/
+text: /(?:(?!\(\(|\(\?|\(!|\(;|\(%|; *\d+\)\)).)+/
 
 
 %import common.SIGNED_INT -> NUMBER
