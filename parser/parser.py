@@ -25,7 +25,6 @@ def process_page(text: str, variable_getter) -> str:
     processed = ""
     try:
         root = parse(text)
-        print(root)
     except Exception as e:
         return str(e)
     for node in root.children:
