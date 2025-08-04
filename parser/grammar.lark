@@ -5,11 +5,16 @@ start: something+
         | link
 
 ?something: special
+          | newline
           | text
+
+newline: EMPTY_LINE
+EMPTY_LINE: /[ \t\f]*\r?\n/
 
 subst: "(%" expr "%)"
 
 expr: sum
+string: /\"[^\"]*\"/
 
 ?sum: product
    | sum "+" product -> sum
@@ -23,7 +28,7 @@ expr: sum
     | "(" sum ")"
 
 
-if: "(?" conditional "?)" then elif* else? "(;;)"
+if: "(?" conditional "?)" _WS* then elif* else? "(;;)"
 elif: "(!" conditional "!)" something*
 else: "(!!)" something*
 then: something*
@@ -42,19 +47,23 @@ then: something*
 !?comp:"<" | ">" | "=" | "<=" | ">="
 
 
-link: "((" something* ";" NUMBER "))" varblock?
-varblock: "((" (varset ",")* varset "))"
+link: "((" text ";" NUMBER "))" varblock?
+varblock: "((" _WS* (varset "," _WS*)* varset _WS* "))"
 ?varset: "+" VARNAME -> flag
-         | "-" VARNAME -> unflag
-         | VARNAME "=" expr -> set
+       | "-" VARNAME -> unflag
+       | VARNAME "=" expr -> set
+       | VARNAME "=" string -> set
 
 
 VARNAME: (LETTER|"_") (LETTER|DIGIT|"_")*
 LETTER: "a".."z" | "A".."Z" | "а".."я" | "А".."Я"
-text: /(?:(?!\(\(|\(\?|\(!|\(;|\(%|; *\d+\)\)).)+/
+text: /(?:(?!\(\(|\)\)|\(\?|\?\)|\(!|!\)|\(;;\)|\(%|%\)|; *\d+)[^\r\n])+/
 
+_SPC: WS_INLINE
+_N: /\r?\n/
 
 %import common.SIGNED_INT -> NUMBER
 %import common.DIGIT
-%import common.WS
-%ignore WS
+%import common.WS_INLINE
+%import common.WS -> _WS
+%ignore WS_INLINE
