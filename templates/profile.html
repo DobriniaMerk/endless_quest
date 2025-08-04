@@ -3,7 +3,10 @@
 {% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">{{ locale['profile']['name'] }}</h1>
+<div class="d-flex align-items-center justify-content-between">
+  <h1 class="mb-4">{{ locale['profile']['name'] }}</h1>
+  <a href="{{ url_for('paragraph.show', lang=paragraph.lang, ind=paragraph.id) }}" class="btn btn-outline-secondary btn-lg px-5">{{ locale['menu']['back'] }}</a>
+</div>
 
 {% if variables %}
   <div class="list-group">

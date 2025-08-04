@@ -4,22 +4,31 @@
 
 {% block content %}
   <div class="card shadow-sm p-4 mb-4">
-    <h2 class="mb-4 display-6">Профиль</h2>
-
-    <p class="fs-5">
-      <strong>Имя пользователя:</strong> {{ username }}
-    </p>
+    <div class="d-flex align-items-center justify-content-between">
+      <h2 class="mb-4 display-6">Профиль</h2>
+      <div>
+        {% if session.get('username') %}
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger px-4">
+          {{ locale['menu']['logout'] }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary px-4">
+          {{ locale['menu']['login'] }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div>
+      <p class="fs-5 mb-0">
+        <strong>Имя пользователя:</strong> {{ username }}
+      </p>
+    </div>
   </div>
 
   <div class="text-center mt-5">
-    {% if session.get('username') %}
-      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger btn-lg px-5">
-        {{ locale['menu']['logout'] }}
-      </a>
-    {% else %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-5">
-        {{ locale['menu']['login'] }}
-      </a>
-    {% endif %}
+    <button onclick="history.back()" class="btn btn-outline-secondary w-100">
+      {{ locale['menu']['back'] }}
+    </button>
   </div>
 {% endblock %}

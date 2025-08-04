@@ -167,7 +167,7 @@ def edit(lang: str, ind: int):
     if raw:
         title = raw[1]
         story = raw[0]
-    paragraph = {"id": ind, "title": title, "story": story}
+    paragraph = {"id": ind, "lang": lang, "title": title, "story": story}
     return render_template(
         "paragraph/edit.html", paragraph=paragraph, ln=lang, locale=locale[lang]
     )

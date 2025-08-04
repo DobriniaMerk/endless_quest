@@ -9,10 +9,10 @@
       <label for="title">{{ locale['edit']['title'] }}</label>
         <input name="title" id="title" value="{{ paragraph['title'] }}" required>
         <label for="story"> {{ locale['edit']['story'] }}</label>
-        <textarea name="story" id="story" required>{{ paragraph['story'] }}</textarea>
-        <div>
-            <input type="submit" value="{{ locale['edit']['save'] }}">
-            <a href="{{ url_for('paragraph.show', ind=paragraph['id'], lang=ln) }}"> {{ locale['edit']['cancel'] }} </a>
+        <textarea name="story" id="story"  required>{{ paragraph['story'] }}</textarea>
+        <div class="d-flex align-items-center justify-content-between">
+            <input type="submit" class="btn btn-outline-secondary btn-lg px-5" value="{{ locale['edit']['save'] }}">
+            <a href="{{ url_for('paragraph.show', ind=paragraph['id'], lang=ln) }}" class="btn btn-outline-secondary btn-lg px-5"> {{ locale['edit']['cancel'] }} </a>
         </div>
     </form>
 

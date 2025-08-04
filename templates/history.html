@@ -3,7 +3,10 @@
 {% block title %}Модерация правок{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Модерация правок</h1>
+<div class="d-flex align-items-center justify-content-between">
+  <h1 class="mb-4">Модерация правок</h1>
+  <a href="{{ url_for('paragraph.show', lang=lang, ind=id) }}" class="btn btn-outline-secondary btn-lg px-5">{{ locale['menu']['back'] }}</a>
+</div>
 
 <div class="list-group">
   {% for version in versions %}
