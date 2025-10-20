@@ -71,6 +71,30 @@ def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str | None):
     return resp
 
 
+def getvar(name: str) -> None|str:
+    """
+    Gets variable by name from current session either from database or cookies.
+
+    Args:
+        name (str): Name of the variable.
+
+    Returns:
+        str | None
+    """
+    username = session.get("username")
+    if username:
+        db = get_db()
+        try:
+            return db.get_variable(name, db.userid_by_name(username))
+        except:
+            return None
+    else:
+        try:
+            return json.loads(request.cookies.get("guest_vars"))[name]
+        except:
+            return None
+
+
 @paragraph_bp.route("/", methods=["GET"])
 def index():
     """
@@ -79,20 +103,8 @@ def index():
     Returns:
         Response: A redirect response to the paragraph display route.
     """
-    username = session.get("username")
-    if username:
-        db = get_db()
-        userid = db.userid_by_name(username)
-        try:
-            ind = int(db.get_variable("currentParagraph", userid))
-        except:
-            ind = 0
-    else:
-        try:
-            ind = int(json.loads(request.cookies.get("guest_vars"))["currentParagraph"])
-        except:
-            ind = 0
-    return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
+
+    return redirect(url_for("paragraph.show", ind=int(geqtvar("currentParagraph")), lang=langs[0]))
 
 
 @paragraph_bp.route("<lang>/<int:ind>", methods=["GET"])
@@ -116,11 +128,12 @@ def show(lang: str, ind: int):
 
     if len(request.args) > 0 or exists:
         args = request.args.copy()
-        if exists:
+        if exists and getvar("currentParagraph") != str(ind):
             args.add("currentParagraph", str(ind))
-        resp = setvars(args, f"{ind}", session.get("username"))
-        if resp:
-            return resp
+        if len(args) > 0:
+            resp = setvars(args, f"{ind}", session.get("username"))
+            if resp:
+                return resp
 
     if lang not in langs:
         return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
