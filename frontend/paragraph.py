@@ -52,12 +52,12 @@ def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str | None):
     """
     if username:
         db = get_db()
-        ind = db.userid_by_name(username)
-        if ind is None:
+        userid = db.userid_by_name(username)
+        if userid is None:
             return None
 
         for var, val in reqargs.items():
-            db.set_variable(var, ind, val)
+            db.set_variable(var, userid, val)
         return None
     guest_vars = request.cookies.get("guest_vars")
     if guest_vars:
@@ -79,7 +79,20 @@ def index():
     Returns:
         Response: A redirect response to the paragraph display route.
     """
-    return redirect(url_for("paragraph.show", ind=0, lang=langs[0]))
+    username = session.get("username")
+    if username:
+        db = get_db()
+        userid = db.userid_by_name(username)
+        try:
+            ind = int(db.get_variable("currentParagraph", userid))
+        except:
+            ind = 0
+    else:
+        try:
+            ind = int(json.loads(request.cookies.get("guest_vars"))["currentParagraph"])
+        except:
+            ind = 0
+    return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
 
 
 @paragraph_bp.route("<lang>/<int:ind>", methods=["GET"])
@@ -96,17 +109,21 @@ def show(lang: str, ind: int):
     Returns:
         Response: Rendered HTML template or redirect response.
     """
-    if len(request.args) > 0:
-        resp = setvars(request.args, f"{ind}", session.get("username"))
+    db = get_db()
+
+    raw = db.get_paragraph(ind, lang)
+    exists = bool(raw)
+
+    if len(request.args) > 0 or exists:
+        args = request.args
+        if exists:
+            args.add("currentParagraph", str(ind))
+        resp = setvars(args, f"{ind}", session.get("username"))
         if resp:
             return resp
 
     if lang not in langs:
         return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
-    db = get_db()
-
-    raw = db.get_paragraph(ind, lang)
-    exists = bool(raw)
     paragraph = {"id": ind, "lang": lang, "title": "", "story": "", "protected": False}
     if not exists:
         paragraph["title"] = locale[lang]["show"]["not_written"]["title"]
