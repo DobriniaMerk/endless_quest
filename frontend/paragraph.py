@@ -115,7 +115,7 @@ def show(lang: str, ind: int):
     exists = bool(raw)
 
     if len(request.args) > 0 or exists:
-        args = request.args
+        args = request.args.copy()
         if exists:
             args.add("currentParagraph", str(ind))
         resp = setvars(args, f"{ind}", session.get("username"))
