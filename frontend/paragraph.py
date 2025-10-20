@@ -104,7 +104,7 @@ def index():
         Response: A redirect response to the paragraph display route.
     """
 
-    return redirect(url_for("paragraph.show", ind=int(geqtvar("currentParagraph")), lang=langs[0]))
+    return redirect(url_for("paragraph.show", ind=int(getvar("currentParagraph")), lang=langs[0]))
 
 
 @paragraph_bp.route("<lang>/<int:ind>", methods=["GET"])
