@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, session
+import json
+
+from flask import Blueprint, render_template, session, request
 from db import get_db
 
 from .locale_data import locale
@@ -25,14 +27,17 @@ def show(ind: int, lang: str):
         Response: Rendered HTML template for the user's profile.
     """
     username = session.get("username")
-    raw = []
     if username:
         db = get_db()
-        raw = db.get_user_profile(db.userid_by_name(username))
+        variables = db.get_user_profile(db.userid_by_name(username))
+    else:
+        guest_vars = request.cookies.get("guest_vars")
+        if guest_vars:
+            variables = json.loads(guest_vars)
 
     return render_template(
         "profile.html",
-        variables=raw,
+        variables=variables,
         paragraph={"lang": lang, "id": ind},
         locale=locale.get(lang, locale["ru"]),
     )
