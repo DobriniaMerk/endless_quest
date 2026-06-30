@@ -205,7 +205,7 @@ def edit(lang: str, ind: int):
             method="POST",
             headers={
                 "Title": f"Paragraph {ind} was edited",
-                "Click": url_for("paragraph.show", ind=ind, lang=lang),
+                "Click": f"https://endlessquest.quicksilver.su{url_for("paragraph.show", ind=ind, lang=lang)}",
                 "Priority": "low",
             },
         )).close()
