@@ -10,7 +10,7 @@ from flask import (
 )
 import bleach
 from werkzeug.datastructures import MultiDict
-import requests
+from urllib.request import Request, urlopen
 
 from db import get_db
 import parser
@@ -200,14 +200,15 @@ def edit(lang: str, ind: int):
         db.edit_paragraph(ind, story, title, protected=False, lang=lang)
 
         # requires local ntfy instance on port 1080
-        requests.post(
+        urlopen(Request(
             "http://127.0.0.1:1080/endlessquest_updates",
+            method="POST",
             headers={
-                "Title": f"Paragraph {ind} was edited".encode("utf-8"),
+                "Title": f"Paragraph {ind} was edited",
                 "Click": url_for("paragraph.show", ind=ind, lang=lang),
-                "Priority": "low"
-            }
-        )
+                "Priority": "low",
+            },
+        )).close()
 
         return redirect(url_for("paragraph.show", ind=ind, lang=lang))
     raw = db.get_paragraph(ind, lang)
