@@ -27,13 +27,15 @@ def show(ind: int, lang: str):
         Response: Rendered HTML template for the user's profile.
     """
     username = session.get("username")
+    variables = []
     if username:
         db = get_db()
         variables = db.get_user_profile(db.userid_by_name(username))
     else:
         guest_vars = request.cookies.get("guest_vars")
         if guest_vars:
-            variables = json.loads(guest_vars)
+            # html template iterates with [key, value in variables]
+            variables = json.loads(guest_vars).items()
 
     return render_template(
         "profile.html",
