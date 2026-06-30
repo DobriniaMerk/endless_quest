@@ -198,6 +198,17 @@ def edit(lang: str, ind: int):
         if not title:
             return redirect(url_for("paragraph.show", ind=4096, lang=lang))
         db.edit_paragraph(ind, story, title, protected=False, lang=lang)
+
+        # requires local ntfy instance on port 1080
+        requests.post(
+            "http://127.0.0.1:1080/endlessquest_updates",
+            headers={
+                "Title": f"Paragraph {ind} was edited".encode("utf-8"),
+                "Click": url_for("paragraph.show", ind=ind, lang=lang),
+                "Priority": "low"
+            }
+        )
+
         return redirect(url_for("paragraph.show", ind=ind, lang=lang))
     raw = db.get_paragraph(ind, lang)
     title = ""
