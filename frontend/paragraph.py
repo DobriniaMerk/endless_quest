@@ -10,6 +10,7 @@ from flask import (
 )
 import bleach
 from werkzeug.datastructures import MultiDict
+import requests
 
 from db import get_db
 import parser
@@ -59,15 +60,19 @@ def setvars(reqargs: MultiDict[str, str], redirect_arg, username: str | None):
         for var, val in reqargs.items():
             db.set_variable(var, userid, val)
         return None
+
     guest_vars = request.cookies.get("guest_vars")
+
     if guest_vars:
         variables = json.loads(guest_vars)
     else:
         variables = {}
-    resp = make_response(redirect(redirect_arg))
+
     for var, val in reqargs.items():
         variables[var] = val
-        resp.set_cookie("guest_vars", json.dumps(variables), max_age=720 * 3600)
+
+    resp = make_response(redirect(redirect_arg))
+    resp.set_cookie("guest_vars", json.dumps(variables), max_age=720 * 3600)
     return resp
 
 
@@ -124,22 +129,22 @@ def show(lang: str, ind: int):
     Returns:
         Response: Rendered HTML template or redirect response.
     """
-    db = get_db()
+    if lang not in langs:
+        return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
 
+    db = get_db()
     raw = db.get_paragraph(ind, lang)
     exists = bool(raw)
 
-    if len(request.args) > 0 or exists:
-        args = request.args.copy()
-        if exists and getvar("currentParagraph") != str(ind):
-            args.add("currentParagraph", str(ind))
-        if len(args) > 0:
-            resp = setvars(args, f"{ind}", session.get("username"))
-            if resp:
-                return resp
+    args = request.args.copy()
+    if exists and getvar("currentParagraph") != str(ind):
+        args.add("currentParagraph", str(ind))
 
-    if lang not in langs:
-        return redirect(url_for("paragraph.show", ind=ind, lang=langs[0]))
+    if len(args) > 0:
+        resp = setvars(args, str(ind), session.get("username"))
+        if resp:
+            return resp
+
     paragraph = {"id": ind, "lang": lang, "title": "", "story": "", "protected": False}
     if not exists:
         paragraph["title"] = locale[lang]["show"]["not_written"]["title"]

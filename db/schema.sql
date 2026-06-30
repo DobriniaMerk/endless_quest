@@ -11,7 +11,7 @@ INSERT INTO general VALUES ('size', 0);
 
 CREATE TABLE IF NOT EXISTS variables (
     name TEXT NOT NULL,
-    user_id INTEGER,
+    user_id INTEGER NOT NULL,
     visible INTEGER NOT NULL DEFAULT 0 CHECK (visible IN (0,1)),
     value TEXT NOT NULL,
     PRIMARY KEY (name, user_id),
